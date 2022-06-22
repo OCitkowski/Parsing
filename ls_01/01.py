@@ -17,11 +17,12 @@ if __name__ == '__main__':
 
     from bs4 import BeautifulSoup
 
-    soup = BeautifulSoup(html_doc, 'html.parser')
+    # soup = BeautifulSoup(html_doc, 'html.parser')
+    soup = BeautifulSoup(html_doc, "lxml")
 
-    # print(f' {soup.find("p", class_="story")} ')
+    print(f' {soup.find("p", class_="story").findAll("a", class_="sister")} ')
 
-    print(f' {soup.find("p", href_="http://example.com/elsie")} ')
+    # print(f' {soup.find("p", href_="http://example.com/elsie")} ')
 
 
     # print(f' {soup.findAll("href")}')
