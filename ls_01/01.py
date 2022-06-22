@@ -1,4 +1,4 @@
-html_doc = """<html><head><title>The Dormouse's story</title></head>
+html_text = """<html><head><title>The Dormouse's story</title></head>
 <body>
 <p class="title"><b>Dormouse's story</b></p>
 
@@ -14,20 +14,21 @@ and they lived at the bottom of a well.</p>
 
 
 if __name__ == '__main__':
-
     from bs4 import BeautifulSoup
-
-    # soup = BeautifulSoup(html_doc, 'html.parser')
-    soup = BeautifulSoup(html_doc, "lxml")
+    soup = BeautifulSoup(html_text, 'html.parser')
+    # soup = BeautifulSoup(html_text, "lxml")
 
     print(f' {soup.find("p", class_="story").findAll("a", class_="sister")} ')
 
-    # print(f' {soup.find("p", href_="http://example.com/elsie")} ')
+    print(f' {soup.find("a", {"class" : "sister", "id" : "link1"}).text} ')
+
+    for i in soup.findAll("a", {"class": "sister"}):
+        print(f' ****** {i.text} ')
+
+    with open("index.html") as file:
+        html_index = file.read()
+        # print(src)
+    soup_lxml = BeautifulSoup(html_index, "lxml")
 
 
-    # print(f' {soup.findAll("href")}')
 
-    # print('"Khal Drogo\'s favorite word is \"athjahakar\""')
-
-    # print(soup.prettify())
-    # print(f' {soup.title} , {soup.string} , {soup.name} , {soup.text} ')
