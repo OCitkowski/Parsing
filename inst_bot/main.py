@@ -10,6 +10,25 @@ def login(password, user_name):
     browser.get('https://www.instagram.com/')
     time.sleep(random.randrange( 3, 5))
 
+    username_input = browser.find_element('name', 'username')
+    username_input.clear()
+    username_input.send_keys('xdfgjfgdhj')
+
+    time.sleep(random.randrange(3, 5))
+
+    password_input = browser.find_element('name', 'password')
+    password_input.clear()
+    password_input.send_keys('xdfgjfgdhj')
+
+    time.sleep(random.randrange(3, 5))
+
+    password_input.send_keys(Keys.ENTER)
+
+    username_input = browser.find_element('name', 'username')
+    username_input.clear()
+
+
+    time.sleep(random.randrange(3, 5))
     browser.close()
     browser.quit()
 
