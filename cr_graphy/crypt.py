@@ -1,21 +1,24 @@
 # https://www.thepythoncode.com/code/encrypt-decrypt-files-symmetric-python
 from cryptography.fernet import Fernet
+# Importing the os library
+import os
+
 
 def write_key(key_path):
     """
     Generates a key and save it into a file
     """
     key = Fernet.generate_key()
-    with open(key_path + '.key', "wb") as key_file:
+    with open(key_path, "wb") as key_file:
         key_file.write(key)
 
 def load_key(path_key):
     """
     Loads the key from the current directory named `key.key`
     """
-    return open(path_key + ".key", "rb").read()
+    return open(path_key, "rb").read()
 
-def encrypt(filename, key):
+def encrypt(filename, key, prefix : str = 're_'):
     """
     Given a filename (str) and key (bytes), it encrypts the file and write it
     """
@@ -26,15 +29,20 @@ def encrypt(filename, key):
     # encrypt data
     encrypted_data = f.encrypt(file_data)
     # write the encrypted file
-    with open(filename, "wb") as file:
+    with open(prefix + filename, "wb") as file:
         file.write(encrypted_data)
 
-def decrypt(filename, key):
+    with open(filename, "wb") as file:
+        file.write(b'#file is crypted')
+
+
+
+def decrypt(filename, key, prefix : str = 're_'):
     """
     Given a filename (str) and key (bytes), it decrypts the file and write it
     """
     f = Fernet(key)
-    with open(filename, "rb") as file:
+    with open(prefix + filename, "rb") as file:
         # read the encrypted data
         encrypted_data = file.read()
     # decrypt data

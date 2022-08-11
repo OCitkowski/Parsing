@@ -1,7 +1,32 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-from auth_data import password, user_name, path, site_path
-import time, random
+from cr_graphy.crypt import write_key, load_key, encrypt, decrypt
+import time, random, os
+
+from inst_bot.copy_auth import *
+
+
+def crypt_auth(file_name):
+
+    key_name = 'bot' + '.key'
+    # file_name = 'test' + '.py'
+    prefix = 're_'
+
+    if os.path.isfile(key_name):
+        print('Key is exists')
+    else:
+        write_key(key_name)
+        print(f'Creating the {key_name} full success')
+
+    key = load_key(key_name)
+
+    if os.path.isfile(prefix + file_name):
+
+        decrypt(file_name, key, prefix)
+        os.remove('re_' + file_name)
+
+    else:
+        encrypt(file_name, key, prefix)
 
 def login():
 
@@ -35,4 +60,12 @@ def login():
 
 
 if __name__ == '__main__':
+
+    if os.path.isfile('re_auth_data.py'):
+        crypt_auth('auth_data.py')
+
     login()
+    crypt_auth('auth_data.py')
+    #
+    # if os.path.isfile('auth_data.py'):
+    #     crypt_auth('auth_data.py')
