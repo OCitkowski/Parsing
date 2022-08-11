@@ -1,3 +1,4 @@
+# https://www.thepythoncode.com/code/encrypt-decrypt-files-symmetric-python
 from cryptography.fernet import Fernet
 
 def write_key(key_path):
