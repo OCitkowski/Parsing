@@ -12,13 +12,15 @@ def write_key(key_path):
     with open(key_path, "wb") as key_file:
         key_file.write(key)
 
+
 def load_key(path_key):
     """
     Loads the key from the current directory named `key.key`
     """
     return open(path_key, "rb").read()
 
-def encrypt(filename, key, prefix : str = 're_'):
+
+def encrypt(filename, key, prefix: str = 're_'):
     """
     Given a filename (str) and key (bytes), it encrypts the file and write it
     """
@@ -36,8 +38,7 @@ def encrypt(filename, key, prefix : str = 're_'):
         file.write(b'#file is crypted')
 
 
-
-def decrypt(filename, key, prefix : str = 're_'):
+def decrypt(filename, key, prefix: str = 're_'):
     """
     Given a filename (str) and key (bytes), it decrypts the file and write it
     """
@@ -54,6 +55,7 @@ def decrypt(filename, key, prefix : str = 're_'):
 
 if __name__ == "__main__":
     import argparse
+
     parser = argparse.ArgumentParser(description="Simple File Encryptor Script")
     parser.add_argument("file", help="File to encrypt/decrypt")
     parser.add_argument("-key", "--generate-key", dest="generate_key", action="store_true",
