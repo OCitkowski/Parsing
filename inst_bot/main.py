@@ -3,7 +3,7 @@ from selenium.webdriver.common.keys import Keys
 from cr_graphy.crypt import write_key, load_key, encrypt, decrypt
 import time, random, os
 from selenium.webdriver.common.by import By
-
+import pickle, json
 from inst_bot.copy_auth import *
 
 
@@ -13,7 +13,8 @@ def crypt_auth(file_name):
     prefix = 're_'
 
     if os.path.isfile(key_name):
-        print('Key is exists')
+    # print('Key is exists')
+        pass
     else:
         write_key(key_name)
         print(f'Creating the {key_name} full success')
@@ -30,36 +31,67 @@ def crypt_auth(file_name):
 
 
 def login():
-    browser = webdriver.Chrome(path)
+    user_phone ='555777'
+    # options
+    options = webdriver.ChromeOptions()
+
+    browser = webdriver.Chrome(executable_path = path, options = options)
     browser.get(site_path)
     time.sleep(random.randrange(2, 4))
 
-    try:
-        username_input = browser.find_element('name', 'username')
-        username_input.clear()
-        username_input.send_keys(user_name)
+    # cookies
+    if not os.path.isfile(f"{user_phone}_cookies"):
 
-        time.sleep(random.randrange(2, 4))
+        try:
+            browser.delete_all_cookies()
 
-        password_input = browser.find_element('name', 'password')
-        password_input.clear()
-        password_input.send_keys(password)
+            username_input = browser.find_element('name', 'username')
+            username_input.clear()
+            username_input.send_keys(user_name)
 
-        time.sleep(random.randrange(3, 5))
+            time.sleep(random.randrange(2, 4))
 
-        password_input.send_keys(Keys.ENTER)
+            password_input = browser.find_element('name', 'password')
+            password_input.clear()
+            password_input.send_keys(password)
 
-        # time.sleep(random.randrange(30, 50))
-        # browser.close()
-        # browser.quit()
+            time.sleep(random.randrange(3, 5))
 
-    except Exception as ex:
-        print(ex)
-        browser.close()
-        browser.quit()
+            password_input.send_keys(Keys.ENTER)
+            time.sleep(random.randrange(50, 60))
+
+            # pickle.dump(browser.get_cookies(), open(f"{user_phone}_cookies", "wb"))
+            json.dump(browser.get_cookies(), open(f"{user_phone}_cookies", "w"))
+
+
+            time.sleep(random.randrange(3, 5))
+            browser.close()
+            browser.quit()
+
+        except Exception as ex:
+            print(ex)
+            browser.close()
+            browser.quit()
+    else:
+        # print(json.load(open(f"{user_phone}_cookies", "rb")))
+
+        browser.delete_all_cookies()
+        # for cookie in pickle.load(open(f"{user_phone}_cookies", "rb")):
+
+        for cookie in json.load(open(f"{user_phone}_cookies", "r")):
+
+                browser.add_cookie(cookie)
+
+        time.sleep(5)
+        browser.refresh()
+        time.sleep(60)
+
+        #
+
+
+
 
 def hashtag_search(hashtag):
-
     browser = webdriver.Chrome(path)
     browser.get(site_path)
     time.sleep(random.randrange(2, 4))
@@ -109,7 +141,8 @@ def hashtag_search(hashtag):
                     browser.get(url)
                     time.sleep(3)
                     print('??????????')
-                    like_button = browser.find_element(By.XPATH, '/html/body/div[1]/section/main/div/div[1]/article/div[3]/section[1]/span[1]/button').click()
+                    like_button = browser.find_element(By.XPATH,
+                                                       '/html/body/div[1]/section/main/div/div[1]/article/div[3]/section[1]/span[1]/button').click()
 
                     time.sleep(random.randrange(80, 100))
                     print('++++++++++')
@@ -134,15 +167,11 @@ def hashtag_search(hashtag):
         browser.quit()
 
 
-
-
-
 if __name__ == '__main__':
 
     if os.path.isfile('re_auth_data.py'):
         crypt_auth('auth_data.py')
 
-    # login()
-    hashtag_search('surfing')
+    login()
+    # hashtag_search('surfing')
     crypt_auth('auth_data.py')
-
