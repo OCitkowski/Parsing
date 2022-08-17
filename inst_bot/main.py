@@ -34,8 +34,39 @@ def crypt_auth(file_name):
     else:
         encrypt(file_name, key, prefix)
 
+def get_chrome_browser(headless:bool = False, start_maximized:bool = True):
+    # https://peter.sh/experiments/chromium-command-line-switches/
+    chrome_options = Options()
 
-def login(time_sleep: int = 3, close_browser: bool = False, proxy='85.26.146.169:80'):
+    if headless:
+        chrome_options.add_argument('--headless')
+    elif start_maximized:
+        chrome_options.add_argument('--start-maximized')
+
+    chrome_options.add_argument('--no-sandbox')
+    chrome_options.add_argument('--disable-gpu')
+    chrome_options.add_argument('--user-data-dir=/tmp/user-data')
+    chrome_options.add_argument('--hide-scrollbars')
+    chrome_options.add_argument('--enable-logging')
+    chrome_options.add_argument('--log-level=0')
+    chrome_options.add_argument('--v=99')
+    chrome_options.add_argument('--data-path=/tmp/data-path')
+    chrome_options.add_argument('--ignore-certificate-errors')
+    chrome_options.add_argument('--homedir=/tmp')
+    chrome_options.add_argument('--disk-cache-dir=/tmp/cache-dir')
+    chrome_options.add_argument('user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36')
+
+    # for ChromeDriver version 79.0.3945.16 or over
+    # don`t show as web_drive
+    chrome_options.add_argument("--disable-blink-features=AutomationControlled")
+
+    browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+    browser.get('https://bot.sannysoft.com/')
+    time.sleep(random.randrange(2, 4))
+
+    return browser
+
+def login(time_sleep: int = 3, close_browser: bool = False):
     user_phone = '555777'
 
     chrome_options = Options()
@@ -55,6 +86,8 @@ def login(time_sleep: int = 3, close_browser: bool = False, proxy='85.26.146.169
     chrome_options.add_argument('--disk-cache-dir=/tmp/cache-dir')
     chrome_options.add_argument(
         'user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36')
+    # for ChromeDriver version 79.0.3945.16 or over
+    chrome_options.add_argument("--disable-blink-features=AutomationControlled")
 
     browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
     browser.get("https://www.whatismyip.com/my-ip-information/")
@@ -133,7 +166,6 @@ def hashtag_search(browser, hashtag, close_browser: bool = False, Unlike: bool =
             hrefs = browser.find_elements(By.TAG_NAME, "a")
             posts_urls = [item.get_attribute('href') for item in hrefs if "/p/" in item.get_attribute('href')]
 
-        print(hrefs)
         print(posts_urls)
 
         for url in posts_urls:
@@ -141,31 +173,38 @@ def hashtag_search(browser, hashtag, close_browser: bool = False, Unlike: bool =
                 time_sleep = 5
                 browser.get(url)
                 time.sleep(time_sleep)
+
+                # like_button
                 like_button = browser.find_element(By.XPATH,
                                                    '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/div[1]/section/main/div[1]/div[1]/article/div/div[2]/div/div[2]/section[1]/span[1]/button')
 
-                print(f' start')
                 print(f'accessible_name - {like_button.accessible_name}')
                 if like_button.accessible_name == 'Like' and not Unlike:
                     like_button.click()
-                    print(f' +')
+                    print(f'like')
                 elif like_button.accessible_name != 'Like' and Unlike:
                     like_button.click()
-                    print(f' -')
-                print(f'accessible_name - {like_button.accessible_name}')
-                print(f' end')
-                # print(
-                #     f'id - {like_button.id} /text - {like_button.text} /get_attribute - {like_button.get_attribute("aria-label")}')
+                    print(f'Unlike')
 
-                follow_button = browser.find_element(By.LINK_TEXT, 'Follow')
+                # follow_button
+                follow_button = browser.find_element(By.XPATH,
+                                                     '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/div[1]/section/main/div[1]/div[1]/article/div/div[2]/div/div[1]/div/header/div[2]/div[1]/div[2]/button/div/div')
                 print(follow_button.text)
+                follow_button.click()
+
+                if follow_button.text == 'Following':
+                    unfollow_button = browser.find_element(By.XPATH,
+                                                           '/html/body/div[1]/div/div/div/div[2]/div/div/div[1]/div/div[2]/div/div/div/div/div[2]/div/div/div[3]/button[1]')
+                    unfollow_button.click()
 
                 time.sleep(random.randrange(time_sleep, time_sleep + 2))
-                browser.refresh()
-                print(f' {url} - like OK')
+                print(follow_button.text)
 
-            except NoSuchElementException:
-                print('sorry? but do not n\'Like n\' finded button`s')
+                browser.refresh()
+                time.sleep(random.randrange(time_sleep, time_sleep + 2))
+   
+            except NoSuchElementException as ex:
+                print(ex)
 
     except Exception as ex:
         print(f' (sorry? but do not finded link`s ) /  {ex} ')
@@ -180,8 +219,10 @@ def hashtag_search(browser, hashtag, close_browser: bool = False, Unlike: bool =
 
 if __name__ == '__main__':
 
-    if os.path.isfile('re_auth_data.py'):
-        crypt_auth('auth_data.py')
-    browser = login(5, False, '91.226.97.113:80')
-    hashtag_search(browser, 'vinnytsia', False, True)
-    crypt_auth('auth_data.py')
+    # if os.path.isfile('re_auth_data.py'):
+    #     crypt_auth('auth_data.py')
+    # browser = login(5, False)
+    # hashtag_search(browser, 'vinnytsia', False, True)
+    # crypt_auth('auth_data.py')
+
+    get_chrome_browser()
