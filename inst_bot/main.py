@@ -134,7 +134,8 @@ def login_in_instagram(browser, user_id: str = None, time_sleep:int = 3):
 
     return result
 
-def get_post_links_by_hashtag_in_instagram(browser, hashtag, quantity_lincs:int = 100, time_sleep:int = 3):
+
+def get_post_links_by_hashtag_in_instagram(browser, hashtag, quantity_lincs: int = 100, time_sleep: int = 3):
     posts_urls = []
     try:
         browser.get(f'https://www.instagram.com/explore/tags/{hashtag}/')
@@ -153,6 +154,28 @@ def get_post_links_by_hashtag_in_instagram(browser, hashtag, quantity_lincs:int 
     finally:
         return posts_urls
 
+
+def save_data_in_json_file(data, file_name):
+    result = False
+    try:
+        with open(file_name + '.json', 'w') as write_file:
+            json.dump(data, write_file)
+            result = True
+        print(f'{file_name}.json save to root')
+    except:
+        print(f'{file_name}.json don`t save to root')
+    return result
+
+def get_data_from_json_file(file_name):
+    result = None
+    try:
+        with open( file_name + '.json', 'r') as read_file:
+            data = json.load(read_file)
+            result = True
+        print(f'{file_name}.json get data from json file')
+    except:
+        print(f'{file_name}.json don`t get data from json file')
+    return data
 
 
 def login(time_sleep: int = 3, close_browser: bool = False):
@@ -320,5 +343,9 @@ if __name__ == '__main__':
     print(login_in_instagram(browser, user_id, time_sleep))
     time.sleep(random.randrange(time_sleep + 20, time_sleep + 22))
     print(save_cookies_by_user_id(browser, user_id))
-    print(get_links_by_hashtag_in_instagram(browser, hashtag, 10, 3))
+    posts_urls = get_post_links_by_hashtag_in_instagram(browser, hashtag, 30, 3)
+    save_data_in_json_file(posts_urls, file_name = user_id)
+
     browser.close()
+
+    print(f' {type(get_data_from_json_file(file_name=user_id))}  - {get_data_from_json_file(file_name=user_id)}' )
