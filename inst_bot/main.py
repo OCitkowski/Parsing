@@ -134,6 +134,25 @@ def login_in_instagram(browser, user_id: str = None, time_sleep:int = 3):
 
     return result
 
+def get_post_links_by_hashtag_in_instagram(browser, hashtag, quantity_lincs:int = 100, time_sleep:int = 3):
+    posts_urls = []
+    try:
+        browser.get(f'https://www.instagram.com/explore/tags/{hashtag}/')
+        time.sleep(random.randrange(time_sleep, time_sleep + 2))
+
+        while len(posts_urls) < quantity_lincs:
+            browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            time.sleep(random.randrange(time_sleep, time_sleep + 2))
+            hrefs = browser.find_elements(By.TAG_NAME, "a")
+            posts_urls = [item.get_attribute('href') for item in hrefs if "/p/" in item.get_attribute('href')]
+
+    except Exception as ex:
+        print(f' (sorry? but do not finded link`s ) /  {ex} ')
+        return []
+
+    finally:
+        return posts_urls
+
 
 
 def login(time_sleep: int = 3, close_browser: bool = False):
@@ -294,9 +313,12 @@ if __name__ == '__main__':
     # hashtag_search(browser, 'vinnytsia', False, True)
     # crypt_auth('auth_data.py')
     # browser.get('https://bot.sannysoft.com/')
-    user_id = '6666'
+    user_id = '66665'
     time_sleep = 5
+    hashtag = 'vinnytsia'
     browser = get_chrome_browser()
     print(login_in_instagram(browser, user_id, time_sleep))
     time.sleep(random.randrange(time_sleep + 20, time_sleep + 22))
+    print(save_cookies_by_user_id(browser, user_id))
+    print(get_links_by_hashtag_in_instagram(browser, hashtag, 10, 3))
     browser.close()
