@@ -34,7 +34,8 @@ def crypt_auth(file_name):
     else:
         encrypt(file_name, key, prefix)
 
-def get_chrome_browser(headless:bool = False, start_maximized:bool = True, link_by_default:str = None):
+
+def get_chrome_browser(headless: bool = False, start_maximized: bool = True, link_by_default: str = None):
     # https://peter.sh/experiments/chromium-command-line-switches/
     chrome_options = Options()
 
@@ -54,7 +55,8 @@ def get_chrome_browser(headless:bool = False, start_maximized:bool = True, link_
     chrome_options.add_argument('--ignore-certificate-errors')
     chrome_options.add_argument('--homedir=/tmp')
     chrome_options.add_argument('--disk-cache-dir=/tmp/cache-dir')
-    chrome_options.add_argument('user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36')
+    chrome_options.add_argument(
+        'user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36')
 
     # for ChromeDriver version 79.0.3945.16 or over
     # don`t show as web_drive
@@ -68,7 +70,8 @@ def get_chrome_browser(headless:bool = False, start_maximized:bool = True, link_
 
     return browser
 
-def set_cookies_by_user_id(browser, user_id:str = None)-> bool:
+
+def set_cookies_by_user_id(browser, user_id: str = None) -> bool:
     result = False
     try:
         browser.delete_all_cookies()
@@ -82,6 +85,7 @@ def set_cookies_by_user_id(browser, user_id:str = None)-> bool:
         print(f'set cookies is {result}')
         return result
 
+
 def save_cookies_by_user_id(browser, user_id: str = None) -> bool:
     result = False
     try:
@@ -93,8 +97,8 @@ def save_cookies_by_user_id(browser, user_id: str = None) -> bool:
         print(f'save cookies is {result}')
         return result
 
-def login_in_instagram(browser, user_id: str = None, time_sleep:int = 3):
 
+def login_in_instagram(browser, user_id: str = None, time_sleep: int = 3):
     result = False
     browser.get(site_path)
     time.sleep(random.randrange(time_sleep, time_sleep + 2))
@@ -155,6 +159,33 @@ def get_post_links_by_hashtag_in_instagram(browser, hashtag, quantity_lincs: int
         return posts_urls
 
 
+def like_the_post_in_instagram(browser, url_post, Unlike: bool = False, time_sleep: int = 3):
+    result = False
+    try:
+        browser.get(url_post)
+        time.sleep(time_sleep)
+        like_button = browser.find_element(By.XPATH,
+                                           '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/div[1]/section/main/div[1]/div[1]/article/div/div[2]/div/div[2]/section[1]/span[1]/button')
+        if like_button.accessible_name == 'Like' and not Unlike:
+            like_button.click()
+            result = True
+            print(f'like')
+        elif like_button.accessible_name != 'Like' and Unlike:
+            like_button.click()
+            result = True
+            print(f'Unlike')
+        # browser.refresh()
+        time.sleep(random.randrange(time_sleep, time_sleep + 2))
+
+    except NoSuchElementException as ex:
+        print(ex)
+    finally:
+        return result
+
+def follow_the_post_in_instagram():
+    pass
+
+
 def save_data_in_json_file(data, file_name):
     result = False
     try:
@@ -166,10 +197,11 @@ def save_data_in_json_file(data, file_name):
         print(f'{file_name}.json don`t save to root')
     return result
 
+
 def get_data_from_json_file(file_name):
     result = None
     try:
-        with open( file_name + '.json', 'r') as read_file:
+        with open(file_name + '.json', 'r') as read_file:
             data = json.load(read_file)
             result = True
         print(f'{file_name}.json get data from json file')
@@ -265,6 +297,7 @@ def login(time_sleep: int = 3, close_browser: bool = False):
             else:
                 return browser
 
+
 def hashtag_search(browser, hashtag, close_browser: bool = False, Unlike: bool = False):
     try:
         browser.get(f'https://www.instagram.com/explore/tags/{hashtag}/')
@@ -313,7 +346,7 @@ def hashtag_search(browser, hashtag, close_browser: bool = False, Unlike: bool =
 
                 browser.refresh()
                 time.sleep(random.randrange(time_sleep, time_sleep + 2))
-   
+
             except NoSuchElementException as ex:
                 print(ex)
 
@@ -343,9 +376,11 @@ if __name__ == '__main__':
     print(login_in_instagram(browser, user_id, time_sleep))
     time.sleep(random.randrange(time_sleep + 20, time_sleep + 22))
     print(save_cookies_by_user_id(browser, user_id))
-    posts_urls = get_post_links_by_hashtag_in_instagram(browser, hashtag, 30, 3)
-    save_data_in_json_file(posts_urls, file_name = user_id)
+    # posts_urls = get_post_links_by_hashtag_in_instagram(browser, hashtag, 30, 3)
+    for url in get_data_from_json_file(file_name=user_id):
+        like_the_post_in_instagram(browser, url, Unlike=True, time_sleep=5)
 
+    # save_data_in_json_file(posts_urls, file_name=user_id)
     browser.close()
 
-    print(f' {type(get_data_from_json_file(file_name=user_id))}  - {get_data_from_json_file(file_name=user_id)}' )
+    # print(f' {type(get_data_from_json_file(file_name=user_id))}  - {get_data_from_json_file(file_name=user_id)}' )
