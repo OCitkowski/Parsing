@@ -34,7 +34,7 @@ def crypt_auth(file_name):
     else:
         encrypt(file_name, key, prefix)
 
-def get_chrome_browser(headless:bool = False, start_maximized:bool = True):
+def get_chrome_browser(headless:bool = False, start_maximized:bool = True, link_by_default:str = None):
     # https://peter.sh/experiments/chromium-command-line-switches/
     chrome_options = Options()
 
@@ -61,10 +61,80 @@ def get_chrome_browser(headless:bool = False, start_maximized:bool = True):
     chrome_options.add_argument("--disable-blink-features=AutomationControlled")
 
     browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-    browser.get('https://bot.sannysoft.com/')
-    time.sleep(random.randrange(2, 4))
+
+    if not link_by_default == None:
+        browser.get(link_by_default)
+        time.sleep(random.randrange(2, 4))
 
     return browser
+
+def set_cookies_by_user_id(browser, user_id:str = None)-> bool:
+    result = False
+    try:
+        browser.delete_all_cookies()
+        for cookie in json.load(open(f"{user_id}_cookies", "r")):
+            browser.add_cookie(cookie)
+        result = True
+    except:
+        browser.refresh()
+        result = False
+    finally:
+        print(f'set cookies is {result}')
+        return result
+
+def save_cookies_by_user_id(browser, user_id: str = None) -> bool:
+    result = False
+    try:
+        json.dump(browser.get_cookies(), open(f"{user_id}_cookies", "w"))
+        result = True
+    except:
+        result = False
+    finally:
+        print(f'save cookies is {result}')
+        return result
+
+def login_in_instagram(browser, user_id: str = None, time_sleep:int = 3):
+
+    result = False
+    browser.get(site_path)
+    time.sleep(random.randrange(time_sleep, time_sleep + 2))
+
+    if not os.path.isfile(f"{user_id}_cookies"):
+        try:
+            browser.delete_all_cookies()
+            username_input = browser.find_element('name', 'username')
+            username_input.clear()
+            username_input.send_keys(user_name)
+            time.sleep(random.randrange(time_sleep, time_sleep + 2))
+            password_input = browser.find_element('name', 'password')
+            password_input.clear()
+            password_input.send_keys(password)
+            time.sleep(random.randrange(time_sleep, time_sleep + 2))
+            password_input.send_keys(Keys.ENTER)
+            time.sleep(random.randrange(time_sleep, time_sleep + 2))
+            save_cookies_by_user_id(browser, user_id)
+
+        except Exception as ex:
+            print(ex)
+
+    else:
+        browser.delete_all_cookies()
+        set_cookies_by_user_id(browser, user_id)
+        time.sleep(random.randrange(time_sleep, time_sleep + 2))
+        browser.refresh()
+        time.sleep(random.randrange(time_sleep, time_sleep + 2))
+
+        try:
+            turn_on_button = browser.find_element(By.XPATH,
+                                                  '/html/body/div[1]/div/div/div/div[2]/div/div/div[1]/div/div[2]/div/div/div/div/div/div/div/div[3]/button[1]')
+            turn_on_button.click()
+            result = True
+        except NoSuchElementException:
+            print('sorry? but do not found turn_on button`s')
+
+    return result
+
+
 
 def login(time_sleep: int = 3, close_browser: bool = False):
     user_phone = '555777'
@@ -153,7 +223,6 @@ def login(time_sleep: int = 3, close_browser: bool = False):
             else:
                 return browser
 
-
 def hashtag_search(browser, hashtag, close_browser: bool = False, Unlike: bool = False):
     try:
         browser.get(f'https://www.instagram.com/explore/tags/{hashtag}/')
@@ -224,5 +293,10 @@ if __name__ == '__main__':
     # browser = login(5, False)
     # hashtag_search(browser, 'vinnytsia', False, True)
     # crypt_auth('auth_data.py')
-
-    get_chrome_browser()
+    # browser.get('https://bot.sannysoft.com/')
+    user_id = '6666'
+    time_sleep = 5
+    browser = get_chrome_browser()
+    print(login_in_instagram(browser, user_id, time_sleep))
+    time.sleep(random.randrange(time_sleep + 20, time_sleep + 22))
+    browser.close()
