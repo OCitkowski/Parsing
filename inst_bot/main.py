@@ -35,6 +35,16 @@ def crypt_auth(file_name):
         encrypt(file_name, key, prefix)
 
 
+# def xpath_exists(self, url):
+def xpath_exists(browser, xpath):
+    # browser = self.browser
+    try:
+        browser.find_element(By.XPATH, xpath)
+        exist = True
+    except NoSuchElementException:
+        exist = False
+    return exist
+
 def get_chrome_browser(headless: bool = False, start_maximized: bool = True, link_by_default: str = None):
     # https://peter.sh/experiments/chromium-command-line-switches/
     chrome_options = Options()
@@ -184,6 +194,46 @@ def like_the_post_in_instagram(browser, url_post, Unlike: bool = False, time_sle
 
 def follow_the_post_in_instagram():
     pass
+
+def collecting_data_from_posts_by_links(browser, posts_urls: list, time_sleep:int = 3):
+    result = {}
+    # browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+    for url_post in posts_urls:
+        post_list = {}
+        try:
+            browser.get(url_post)
+            time.sleep(time_sleep)
+            path_like = '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/div[1]/section/main/div[1]/div[1]/article/div/div[2]/div/div[2]/section[2]/div/div/div/a/div/span'
+
+            if xpath_exists(browser, path_like):
+                like = browser.find_element(By.XPATH, path_like)
+
+            time.sleep(time_sleep)
+
+            hrefs = browser.find_elements(By.TAG_NAME, "a")
+            hashtags =  []
+            for href in hrefs:
+                if len(href.text) and href.text[0] == '#':
+                    hashtags.append(href.text)
+
+            time_post = browser.find_element(By.TAG_NAME, "time").get_attribute('datetime')
+
+            time.sleep(random.randrange(time_sleep, time_sleep + 2))
+
+            post_list['like'] = like.text
+            post_list['hrefs'] = hashtags
+            post_list['time_post'] = time_post
+
+            result[url_post] = post_list
+            time.sleep(random.randrange(time_sleep, time_sleep + 2))
+            time.sleep(time_sleep + 200)
+
+        except NoSuchElementException as ex:
+            print(ex)
+        finally:
+            pass
+
+    return result
 
 
 def save_data_in_json_file(data, file_name):
@@ -373,12 +423,15 @@ if __name__ == '__main__':
     time_sleep = 5
     hashtag = 'vinnytsia'
     browser = get_chrome_browser()
-    print(login_in_instagram(browser, user_id, time_sleep))
-    time.sleep(random.randrange(time_sleep + 20, time_sleep + 22))
-    print(save_cookies_by_user_id(browser, user_id))
+    # print(login_in_instagram(browser, user_id, time_sleep))
+    # time.sleep(random.randrange(time_sleep + 20, time_sleep + 22))
+    # print(save_cookies_by_user_id(browser, user_id))
     # posts_urls = get_post_links_by_hashtag_in_instagram(browser, hashtag, 30, 3)
-    for url in get_data_from_json_file(file_name=user_id):
-        like_the_post_in_instagram(browser, url, Unlike=True, time_sleep=5)
+    # for url in get_data_from_json_file(file_name=user_id):
+        # like_the_post_in_instagram(browser, url, Unlike=True, time_sleep=5)
+    print(collecting_data_from_posts_by_links(browser, get_data_from_json_file(file_name=user_id)))
+
+
 
     # save_data_in_json_file(posts_urls, file_name=user_id)
     browser.close()
