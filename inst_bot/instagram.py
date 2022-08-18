@@ -8,6 +8,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.common.exceptions import NoSuchElementException
+from progress.bar import IncrementalBar
 
 
 class InstagramBot():
@@ -21,8 +22,8 @@ class InstagramBot():
         self.auth_file_name = 'auth_data.py'
         self.key_file_name = username + '_bot_instagram.key'
         self.prefix = 're_'
-        self.time_sleep = 5
-        self.min_time_sleep = 3
+        self.time_sleep = 7
+        self.min_time_sleep = 5
 
         self.browser = self.open_in_instagram(headless, start_maximized)
         self.is_cookies = self.set_cookies_by_user_id(username)
@@ -156,16 +157,114 @@ class InstagramBot():
             return result
 
 
+    def get_post_links_by_hashtag(self, hashtag, quantity_links: int = 40, time_sleep: int = 3):
+        posts_urls = []
+        try:
+            self.browser.get(f'https://www.instagram.com/explore/tags/{hashtag}/')
+            self.sleep_browser()
+
+            while len(posts_urls) < quantity_links:
+
+                self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+                self.sleep_browser()
+                hrefs = self.browser.find_elements(By.TAG_NAME, "a")
+                posts_urls = [item.get_attribute('href') for item in hrefs if "/p/" in item.get_attribute('href')]
+        except Exception as ex:
+            print(f' (sorry? but do not found link`s ) /  {ex} ')
+            return []
+        finally:
+            return posts_urls
+
+
+    def get_collecting_data_from_posts_by_links(self, posts_urls: list):
+        result = {}
+        # browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+
+        bar = IncrementalBar('Processing', max=len(posts_urls))
+        for url_post in posts_urls:
+            post_list = {}
+            try:
+                self.browser.get(url_post)
+                self.sleep_browser()
+                path_like = '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/div[1]/section/main/div[1]/div[1]/article/div/div[2]/div/div[2]/section[2]/div/div/div/a/div/span'
+
+                if self.xpath_exists(path_like):
+                    like = self.browser.find_element(By.XPATH, path_like)
+                    post_list['like'] = like.text
+
+                self.sleep_browser()
+                hrefs = self.browser.find_elements(By.TAG_NAME, "a")
+                hashtags = []
+                for href in hrefs:
+                    if len(href.text) and href.text[0] == '#' and href.text[1] != r'\\':
+                        hashtags.append(href.text)
+                time_post = self.browser.find_element(By.TAG_NAME, "time").get_attribute('datetime')
+                self.sleep_browser()
+
+                post_list['hrefs'] = hashtags
+                post_list['time_post'] = time_post
+                result[url_post] = post_list
+                print('OK - ' + url_post)
+
+            except NoSuchElementException as ex:
+                print('failed to process - ' + url_post)
+                print(ex)
+                self.close_browser()
+            finally:
+                # pass
+                bar.next()
+        bar.finish()
+        return result
+
+
+    def xpath_exists(self, xpath):
+        try:
+            self.browser.find_element(By.XPATH, xpath)
+            exist = True
+        except NoSuchElementException:
+            exist = False
+        return exist
+
+
+    def save_data_in_json_file(self, data, file_name):
+        result = False
+        try:
+            with open(file_name + '.json', 'w') as write_file:
+                json.dump(data, write_file, ensure_ascii=False)
+                result = True
+            print(f'{file_name}.json save to root')
+        except:
+            print(f'{file_name}.json don`t save to root')
+        return result
+
+
+    def get_data_from_json_file(self, file_name):
+        result = None
+        try:
+            with open(file_name + '.json', 'r') as read_file:
+                data = json.load(read_file)
+                result = True
+            print(f'{file_name}.json get data from json file')
+        except:
+            print(f'{file_name}.json don`t get data from json file')
+        return data
+
+
 if __name__ == '__main__':
     user_id = '66665'
     hashtag = 'vinnytsia'
 
-    instagram = InstagramBot(user_name, password)
+    instagram = InstagramBot(user_name, password, True)
 
     print(instagram.__dict__)
     instagram.login_in_instagram()
+    post_links = instagram.get_post_links_by_hashtag(hashtag)
+    instagram.save_data_in_json_file(post_links, instagram.username)
     instagram.sleep_browser(8)
+    collecting_data = instagram.get_collecting_data_from_posts_by_links(instagram.get_data_from_json_file(instagram.username))
+    instagram.save_data_in_json_file(collecting_data, 'data_' + instagram.username)
     instagram.close_browser()
+    print(collecting_data)
 
 
 

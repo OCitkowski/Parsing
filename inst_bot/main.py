@@ -419,21 +419,23 @@ if __name__ == '__main__':
     # hashtag_search(browser, 'vinnytsia', False, True)
     # crypt_auth('auth_data.py')
     # browser.get('https://bot.sannysoft.com/')
-    user_id = '66665'
-    time_sleep = 5
-    hashtag = 'vinnytsia'
-    browser = get_chrome_browser()
+    # user_id = '66665'
+    # time_sleep = 5
+    # hashtag = 'vinnytsia'
+    # browser = get_chrome_browser()
     # print(login_in_instagram(browser, user_id, time_sleep))
     # time.sleep(random.randrange(time_sleep + 20, time_sleep + 22))
     # print(save_cookies_by_user_id(browser, user_id))
     # posts_urls = get_post_links_by_hashtag_in_instagram(browser, hashtag, 30, 3)
     # for url in get_data_from_json_file(file_name=user_id):
         # like_the_post_in_instagram(browser, url, Unlike=True, time_sleep=5)
-    print(collecting_data_from_posts_by_links(browser, get_data_from_json_file(file_name=user_id)))
-
-
-
+    # print(collecting_data_from_posts_by_links(browser, get_data_from_json_file(file_name=user_id)))
     # save_data_in_json_file(posts_urls, file_name=user_id)
-    browser.close()
-
+    # browser.close()
     # print(f' {type(get_data_from_json_file(file_name=user_id))}  - {get_data_from_json_file(file_name=user_id)}' )
+
+
+
+    s = "#\u0432\u0456\u043d\u043d\u0438\u0446\u044f"
+    for i in s:
+        print(i)
