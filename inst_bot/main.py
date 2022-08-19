@@ -419,20 +419,20 @@ if __name__ == '__main__':
     # hashtag_search(browser, 'vinnytsia', False, True)
     # crypt_auth('auth_data.py')
     # browser.get('https://bot.sannysoft.com/')
-    # user_id = '66665'
+    # cookies_file_name = '66665'
     # time_sleep = 5
     # hashtag = 'vinnytsia'
     # browser = get_chrome_browser()
-    # print(login_in_instagram(browser, user_id, time_sleep))
+    # print(login_in_instagram(browser, cookies_file_name, time_sleep))
     # time.sleep(random.randrange(time_sleep + 20, time_sleep + 22))
-    # print(save_cookies_by_user_id(browser, user_id))
+    # print(save_cookies_by_user_id(browser, cookies_file_name))
     # posts_urls = get_post_links_by_hashtag_in_instagram(browser, hashtag, 30, 3)
-    # for url in get_data_from_json_file(file_name=user_id):
+    # for url in get_data_from_json_file(file_name=cookies_file_name):
         # like_the_post_in_instagram(browser, url, Unlike=True, time_sleep=5)
-    # print(collecting_data_from_posts_by_links(browser, get_data_from_json_file(file_name=user_id)))
-    # save_data_in_json_file(posts_urls, file_name=user_id)
+    # print(collecting_data_from_posts_by_links(browser, get_data_from_json_file(file_name=cookies_file_name)))
+    # save_data_in_json_file(posts_urls, file_name=cookies_file_name)
     # browser.close()
-    # print(f' {type(get_data_from_json_file(file_name=user_id))}  - {get_data_from_json_file(file_name=user_id)}' )
+    # print(f' {type(get_data_from_json_file(file_name=cookies_file_name))}  - {get_data_from_json_file(file_name=cookies_file_name)}' )
 
 
 
