@@ -1,3 +1,8 @@
+
+from cryptography.fernet import Fernet
+
+
+
 class ChromeX():
     """Chrome browser"""
     __type = "ChromeX"
@@ -25,6 +30,22 @@ class FileX(ChromeX):
     def print_hand_time_sleep(self):
         print(f' {self.__dict__}  {self.hand_time_sleep}')
 
+
+def encrypt_in_file(filename):
+
+    with open(filename, "rt") as file:
+        data =''
+        lines = file.readlines()
+        for line in lines:
+            copy_l = line
+            l_line = line.split('=')
+            line = f'{l_line[0]}= {copy_l}'
+
+            data = data + line + '\n'
+
+    with open(filename, "w") as file:
+        file.write(data)
+
 if __name__ == '__main__':
     # ff = ChromeX(5)
-    x = FileX(5)
+    encrypt_in_file('xxx.py', )

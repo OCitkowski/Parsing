@@ -1,4 +1,7 @@
+import os
 import time, random, json
+
+import dencrypt as dencrypt
 
 from inst_bot.auth_data import password, user_name
 from selenium import webdriver
@@ -8,6 +11,8 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.common.exceptions import NoSuchElementException
+
+from cr_graphy.crypt_password import generate_key, encrypt, decrypt, encrypt_in, decrypt_in
 
 
 class ChromeBrowser():
@@ -248,19 +253,49 @@ class InstagramBot(ChromeBrowser):
                 pass
         return result
 
+def encrypt_in_file(full_file_name):
+    password = input('Enter your password -')
+    result = False
+
+    if not os.path.isfile("salt.salt"):
+        key = generate_key(password, salt_size=16, save_salt=True)
+    else:
+        key = generate_key(password, load_existing_salt=True)
+
+    encrypt_in(full_file_name, key)
+
+    return result
+
+def decrypt_in_file(file_name):
+    password = input('Enter your password -')
+    result = False
+
+    if not os.path.isfile("salt.salt"):
+        print('Don`t have salt!!!')
+    else:
+        key = generate_key(password, load_existing_salt=True)
+
+    decrypt_in(full_file_name, key)
+
+    return result
 
 if __name__ == '__main__':
-    insta = InstagramBot(username=user_name, password=password)
-    insta.headless = True
-    insta.__str__()
-    # for item in  insta.__dict__:
-    #     print(item)
-    insta.sleep()
-    insta.login_in_instagram()
-    insta.hand_time_sleep = 10
-    insta.sleep()
-    insta.json_file_name = "big_fox_funny"
-    data = insta.get_data_from_json_file()
-    data_from_posts = insta.get_collecting_data_from_posts_by_links(data)
-    insta.json_file_name = "data_new_fox_funny"
-    insta.save_data_in_json_file(data_from_posts)
+
+    full_file_name = 'xxx.py'
+    encrypt_in_file(full_file_name)
+    decrypt_in_file(full_file_name)
+    # decrypt_file(full_file_name)
+    # insta = InstagramBot(username=user_name, password=password)
+    # insta.headless = True
+    # insta.__str__()
+    # # for item in  insta.__dict__:
+    # #     print(item)
+    # insta.sleep()
+    # insta.login_in_instagram()
+    # insta.hand_time_sleep = 10
+    # insta.sleep()
+    # insta.json_file_name = "big_fox_funny"
+    # data = insta.get_data_from_json_file()
+    # data_from_posts = insta.get_collecting_data_from_posts_by_links(data)
+    # insta.json_file_name = "data_new_fox_funny"
+    # insta.save_data_in_json_file(data_from_posts)

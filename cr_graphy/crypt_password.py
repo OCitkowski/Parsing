@@ -1,5 +1,5 @@
 # https://www.thepythoncode.com/code/encrypt-decrypt-files-symmetric-python
-# ToDo
+
 import cryptography
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives.kdf.scrypt import Scrypt
@@ -59,7 +59,26 @@ def encrypt(filename, key):
     # encrypt data
     encrypted_data = f.encrypt(file_data)
     # write the encrypted file
-    with open(filename, "wb") as file:
+    with open(filename, "w") as file:
+        file.write(encrypted_data)
+
+def encrypt_in(filename, key):
+    """
+    Given a filename (str) and key (bytes), it encrypts the file and write in file
+    """
+    f = Fernet(key)
+
+    with open(filename, "rt") as file:
+        encrypted_data =''
+        lines = file.readlines()
+        for line in lines:
+            copy_l = line
+            l_line = line.split('=')
+            line = f'{l_line[0]}= {(f.encrypt(copy_l.encode("utf-8"))).decode()}'
+
+            encrypted_data = encrypted_data + line + '\n'
+
+    with open(filename, "w") as file:
         file.write(encrypted_data)
 
 
@@ -80,6 +99,27 @@ def decrypt(filename, key):
     # write the original file
     with open(filename, "wb") as file:
         file.write(decrypted_data)
+    print("File decrypted successfully")
+
+def decrypt_in(filename, key):
+    f = Fernet(key)
+    with open(filename, "rt") as file:
+        # read the encrypted data
+        lines = file.readlines()
+    # decrypt data
+    try:
+        decrypt_data = ''
+        for line in lines:
+            l_line = line.split('=')
+            b_line = bytes(l_line[1],'UTF-8')
+            line = f'{f.decrypt(b_line)}'
+            decrypt_data = decrypt_data + line + '\n'
+    except cryptography.fernet.InvalidToken:
+        print("Invalid token, most likely the password is incorrect")
+        return
+    # write the original file
+    with open(filename, "wb") as file:
+        file.write(decrypt_data)
     print("File decrypted successfully")
 
 
