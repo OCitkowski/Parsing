@@ -72,9 +72,9 @@ def encrypt_in(filename, key):
         encrypted_data =''
         lines = file.readlines()
         for line in lines:
-            copy_l = line
-            l_line = line.split('=')
-            line = f'{l_line[0]}= {(f.encrypt(copy_l.encode("utf-8"))).decode()}'
+            copy_l = line.replace('\n', '')
+            l_line = line.replace(' ', '').split('=')
+            line = f'{l_line[0]} = {(f.encrypt(copy_l.encode("utf-8"))).decode()}'
 
             encrypted_data = encrypted_data + line + '\n'
 
@@ -110,15 +110,15 @@ def decrypt_in(filename, key):
     try:
         decrypt_data = ''
         for line in lines:
-            l_line = line.split('=')
-            b_line = bytes(l_line[1],'UTF-8')
-            line = f'{f.decrypt(b_line)}'
-            decrypt_data = decrypt_data + line + '\n'
+            l_line = line.split(' = ')
+            b_line = bytes(l_line[1].replace('\\n', ''),'UTF-8')
+            line = f.decrypt(b_line).decode()
+            decrypt_data = decrypt_data + line + "\n"
     except cryptography.fernet.InvalidToken:
         print("Invalid token, most likely the password is incorrect")
         return
     # write the original file
-    with open(filename, "wb") as file:
+    with open(filename, "w") as file:
         file.write(decrypt_data)
     print("File decrypted successfully")
 
