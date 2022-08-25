@@ -253,6 +253,49 @@ class InstagramBot(ChromeBrowser):
                 pass
         return result
 
+    def like_the_posts_in_instagram(self, posts_urls, Unlike: bool = False):
+
+        for post_url in posts_urls:
+            try:
+                self.browser.get(post_url)
+                self.sleep()
+                like_button = self.browser.find_element(By.XPATH,
+                                                        '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/div[1]/section/main/div[1]/div[1]/article/div/div[2]/div/div[2]/section[1]/span[1]/button')
+                if like_button.accessible_name == 'Like' and not Unlike:
+                    like_button.click()
+                    self.browser.refresh()
+                    print(f'like for {post_url}')
+                elif like_button.accessible_name != 'Like' and Unlike:
+                    like_button.click()
+                    self.browser.refresh()
+                    print(f'Unlike for {post_url}')
+                self.sleep()
+
+            except NoSuchElementException as ex:
+                print(ex)
+
+    def follow_the_posts_in_instagram(self, posts_urls, UnFollow: bool = False):
+        for post_url in posts_urls:
+            try:
+                self.browser.get(post_url)
+                self.sleep()
+                follow_button = self.browser.find_element(By.XPATH,
+                                                          '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/div[1]/section/main/div[1]/div[1]/article/div/div[2]/div/div[1]/div/header/div[2]/div[1]/div[2]/button/div/div')
+                if follow_button.text != 'Following' and not UnFollow:
+                    follow_button.click()
+                    self.browser.refresh()
+                    print(f'follow for {post_url}')
+                elif follow_button.text == 'Following' and UnFollow:
+                    follow_button.click()
+                    unfollow_button = self.browser.find_element(By.XPATH, '//*[contains(text(), "Unfollow")]')
+                    unfollow_button.click()
+                    self.browser.refresh()
+                    print(f'Unfollow for {post_url}')
+                self.sleep()
+            except NoSuchElementException as ex:
+                print(ex)
+
+
 def encrypt_in_file(full_file_name):
     password = input('Enter your password -')
     result = False
@@ -266,7 +309,8 @@ def encrypt_in_file(full_file_name):
 
     return result
 
-def decrypt_in_file(file_name):
+
+def decrypt_in_file(full_file_name):
     password = input('Enter your password -')
     result = False
 
@@ -281,21 +325,22 @@ def decrypt_in_file(file_name):
 
 if __name__ == '__main__':
 
-    full_file_name = 'xxx.py'
-    encrypt_in_file(full_file_name)
-    decrypt_in_file(full_file_name)
-    # decrypt_file(full_file_name)
-    # insta = InstagramBot(username=user_name, password=password)
-    # insta.headless = True
-    # insta.__str__()
-    # # for item in  insta.__dict__:
-    # #     print(item)
-    # insta.sleep()
-    # insta.login_in_instagram()
-    # insta.hand_time_sleep = 10
-    # insta.sleep()
-    # insta.json_file_name = "big_fox_funny"
-    # data = insta.get_data_from_json_file()
+    # full_file_name = 'xxx.py'
+    # encrypt_in_file(full_file_name)
+    # decrypt_in_file(full_file_name)
+
+    insta = InstagramBot(username=user_name, password=password)
+    insta.headless = True
+    insta.__str__()
+    # for item in  insta.__dict__:
+    #     print(item)
+    insta.sleep()
+    insta.login_in_instagram()
+    insta.hand_time_sleep = 5
+    insta.sleep()
+    insta.json_file_name = "big_fox_funny"
+    data = insta.get_data_from_json_file()
     # data_from_posts = insta.get_collecting_data_from_posts_by_links(data)
     # insta.json_file_name = "data_new_fox_funny"
     # insta.save_data_in_json_file(data_from_posts)
+    insta.follow_the_posts_in_instagram(data, UnFollow=True)
