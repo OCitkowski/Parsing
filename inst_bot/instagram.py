@@ -1,8 +1,6 @@
 import os
 import time, random, json
 
-import dencrypt as dencrypt
-
 from inst_bot.auth_data import password, user_name
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -11,6 +9,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.action_chains import ActionChains
 
 from cr_graphy.crypt_password import generate_key, encrypt, decrypt, encrypt_in, decrypt_in
 
@@ -205,11 +204,13 @@ class InstagramBot(ChromeBrowser):
         posts_urls = []
         try:
             self.browser.get(f'https://www.instagram.com/explore/tags/{hashtag}/')
-            self.sleep_browser()
-
+            self.sleep()
+            actions = ActionChains(self.browser)
             while len(posts_urls) < quantity_links:
                 self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                self.sleep_browser()
+                time.sleep(1)
+                actions.send_keys(Keys.PAGE_DOWN).perform()
+                self.sleep()
                 hrefs = self.browser.find_elements(By.TAG_NAME, "a")
                 posts_urls = [item.get_attribute('href') for item in hrefs if "/p/" in item.get_attribute('href')]
         except Exception as ex:
@@ -231,6 +232,7 @@ class InstagramBot(ChromeBrowser):
                 if self.xpath_exists(path_like):
                     like = self.browser.find_element(By.XPATH, path_like)
                     post_list['like'] = like.text
+                # TODO else video....
 
                 self.sleep()
                 hrefs = self.browser.find_elements(By.TAG_NAME, "a")
@@ -295,6 +297,32 @@ class InstagramBot(ChromeBrowser):
             except NoSuchElementException as ex:
                 print(ex)
 
+    def search_best_post_by_like_in_file(self, number_of_best_posts: int = 3):
+        best_posts = []
+        data = self.get_data_from_json_file()
+        for item in data:
+            if 'like' in data[item].keys():
+                # print(f'{data[item]["like"]} / {type(data[item]["like"] )}')
+                if len(best_posts) >= number_of_best_posts:
+                    for best_post in best_posts:
+                        if float(data[best_post]["like"].replace(",", "")) < float(data[item]["like"].replace(",", "")):
+                            # print(f'remove from best_posts {best_post} {data[best_post]["like"]}/ append to best_posts {item} {data[item]["like"]} / {data[best_post]["like"] < data[item]["like"]}')
+                            best_posts.remove(best_post)
+                            best_posts.append(item)
+                            break
+                else:
+                    best_posts.append(item)
+                    # print('add to best_posts ' + item)
+
+        for post in best_posts:
+            print(f'{data[post]}')
+
+            # TODO for video
+
+
+
+
+
 
 def encrypt_in_file(full_file_name):
     password = input('Enter your password -')
@@ -330,17 +358,22 @@ if __name__ == '__main__':
     # decrypt_in_file(full_file_name)
 
     insta = InstagramBot(username=user_name, password=password)
-    insta.headless = True
-    insta.__str__()
-    # for item in  insta.__dict__:
-    #     print(item)
-    insta.sleep()
-    insta.login_in_instagram()
-    insta.hand_time_sleep = 5
-    insta.sleep()
-    insta.json_file_name = "big_fox_funny"
-    data = insta.get_data_from_json_file()
+    # insta.close()
+    # insta.headless = True
+    # insta.browser = insta.open()
+
+    # insta.__str__()
+    # # for item in  insta.__dict__:
+    # #     print(item)
+    # insta.sleep()
+    # insta.login_in_instagram()
+    # insta.sleep()
+    # post_links = insta.get_post_links_by_hashtag('funnycats', 50)
+    # insta.json_file_name = "funnycats"
+    # insta.save_data_in_json_file(post_links)
+    # data = insta.get_data_from_json_file()
     # data_from_posts = insta.get_collecting_data_from_posts_by_links(data)
-    # insta.json_file_name = "data_new_fox_funny"
+    insta.json_file_name = "data_funnycats"
     # insta.save_data_in_json_file(data_from_posts)
-    insta.follow_the_posts_in_instagram(data, UnFollow=True)
+    # insta.follow_the_posts_in_instagram(data, UnFollow=True)
+    insta.search_best_post_by_like_in_file(5)
