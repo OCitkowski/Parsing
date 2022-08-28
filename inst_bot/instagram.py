@@ -17,27 +17,23 @@ from cr_graphy.crypt_password import generate_key, encrypt, decrypt, encrypt_in,
 class ChromeBrowser():
     """Chrome browser"""
     __type = "ChromeBrowser"
+    link_by_default = 'https://www.google.com/'
+    cookies_file_name = 'chrome'
+    json_file_name = 'chrome'
+    time_sleep = 7
+    min_time_sleep = 5
+    hand_time_sleep = 0
 
     def __init__(self, headless: bool = False, start_maximized: bool = True):
 
-        self.link_by_default = 'https://www.google.com/'
-        self.cookies_file_name = 'chrome'
-        self.json_file_name = 'chrome'
-
-        self.time_sleep = 7
-        self.min_time_sleep = 5
-        self.hand_time_sleep = 0
-
         self.headless = headless
         self.start_maximized = start_maximized
-
-        self.browser = self.open(self.headless, self.start_maximized)
-        self.is_cookies = self.set_cookies_by_user_id(self.cookies_file_name)
+        self.browser = None
 
     def __del__(self):
-
-        self.save_cookies_by_user_id(cookies_file_name=self.cookies_file_name)
-        self.browser.close()
+        if self.browser:
+            self.save_cookies_by_user_id(cookies_file_name=self.cookies_file_name)
+            self.browser.close()
 
     def __str__(self):
         return f"Chrome browser: {self.link_by_default}  Timing: sleep = {self.time_sleep}  min = {self.min_time_sleep}  hand = {self.hand_time_sleep}"
@@ -90,9 +86,9 @@ class ChromeBrowser():
 
         browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
-        if not self.link_by_default == None:
-            browser.get(self.link_by_default)
-            self.sleep()
+        # if not self.link_by_default == None:
+        #     browser.get(self.link_by_default)
+        #     self.sleep()
         return browser
 
     def set_cookies_by_user_id(self, cookies_file_name: str = None) -> bool:
@@ -320,10 +316,6 @@ class InstagramBot(ChromeBrowser):
             # TODO for video
 
 
-
-
-
-
 def encrypt_in_file(full_file_name):
     password = input('Enter your password -')
     result = False
@@ -356,8 +348,9 @@ if __name__ == '__main__':
     # full_file_name = 'xxx.py'
     # encrypt_in_file(full_file_name)
     # decrypt_in_file(full_file_name)
-
-    insta = InstagramBot(username=user_name, password=password)
+    # InstagramBot(username=user_name, password=password).print_type()
+    # insta = InstagramBot(username=user_name, password=password)
+    # print(dir(insta))
     # insta.close()
     # insta.headless = True
     # insta.browser = insta.open()
@@ -373,7 +366,13 @@ if __name__ == '__main__':
     # insta.save_data_in_json_file(post_links)
     # data = insta.get_data_from_json_file()
     # data_from_posts = insta.get_collecting_data_from_posts_by_links(data)
-    insta.json_file_name = "data_funnycats"
-    # insta.save_data_in_json_file(data_from_posts)
-    # insta.follow_the_posts_in_instagram(data, UnFollow=True)
-    insta.search_best_post_by_like_in_file(5)
+    # insta.json_file_name = "data_funnycats"
+    # # insta.save_data_in_json_file(data_from_posts)
+    # # insta.follow_the_posts_in_instagram(data, UnFollow=True)
+    # insta.search_best_post_by_like_in_file(5)
+    crbr = ChromeBrowser()
+    # for i in dir(crbr):
+    print(ChromeBrowser.__dict__)
+    print(crbr.__dict__)
+
+    # print(dir(crbr))
