@@ -15,7 +15,7 @@ from cr_graphy.crypt_password import generate_key, encrypt, decrypt, encrypt_in,
 
 
 class ChromeBrowser():
-    """Chrome browser"""
+    """Chrome __browser"""
     __type = "ChromeBrowser"
     link_by_default = 'https://www.google.com/'
     cookies_file_name = 'chrome'
@@ -36,7 +36,7 @@ class ChromeBrowser():
             self.browser.close()
 
     def __str__(self):
-        return f"Chrome browser: {self.link_by_default}  Timing: sleep = {self.time_sleep}  min = {self.min_time_sleep}  hand = {self.hand_time_sleep}"
+        return f"Chrome __browser: {self.link_by_default}  Timing: sleep = {self.time_sleep}  min = {self.min_time_sleep}  hand = {self.hand_time_sleep}"
 
     @staticmethod
     def print_type():
@@ -87,7 +87,7 @@ class ChromeBrowser():
         browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
         # if not self.link_by_default == None:
-        #     browser.get(self.link_by_default)
+        #     __browser.get(self.link_by_default)
         #     self.sleep()
         return browser
 
@@ -190,7 +190,7 @@ class InstagramBot(ChromeBrowser):
                 print(ex)
 
             # try:
-            #     turn_on_button = self.browser.find_element(By.XPATH,
+            #     turn_on_button = self.__browser.find_element(By.XPATH,
             #                                           '/html/body/div[1]/div/div/div/div[2]/div/div/div[1]/div/div[2]/div/div/div/div/div/div/div/div[3]/button[1]')
             #     turn_on_button.click()
             # except NoSuchElementException:
@@ -353,7 +353,7 @@ if __name__ == '__main__':
     # print(dir(insta))
     # insta.close()
     # insta.headless = True
-    # insta.browser = insta.open()
+    # insta.__browser = insta.open()
 
     # insta.__str__()
     # # for item in  insta.__dict__:

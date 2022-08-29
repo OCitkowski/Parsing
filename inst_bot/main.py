@@ -10,62 +10,87 @@ from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.action_chains import ActionChains
-from browser_options import CHROME_OPTIONS, CHROME_OPTIONS_HEAD
+from browser_options import CHROME_OPTIONS
 
 from cr_graphy.crypt_password import generate_key, encrypt, decrypt, encrypt_in, decrypt_in
 
 
 class ChromeBrowser():
-    """Chrome browser"""
+    """Chrome __browser"""
     __type = "ChromeBrowser"
     __max_time_sleep = 0
     __min_time_sleep = 0
     __hand_time_sleep = 0
 
-    __start_headless = False
-    __start_maximized = True
-
     __chrome_options = Options()
 
     def __init__(self):
 
-        self.browser = None
-        self.link_by_default = 'https://www.google.com/'
-        self.cookies_file_name = 'chrome'
-        self.json_file_name = 'chrome'
+        self.__browser = None
+        self.__cookies_file_name = 'chrome'
+        self.__json_file_name = 'chrome'
     def __del__(self):
-        if self.browser:
+        if self.__browser:
             # self.save_cookies_by_user_id(cookies_file_name=self.cookies_file_name)
-            self.browser.close()
+            self.__browser.close()
 
     def __str__(self):
-        return f"Chrome browser: {self.link_by_default}  headless = {self.__start_headless}  maximized = {self.__start_maximized} Timing: max = {self.__max_time_sleep}  min = {self.__min_time_sleep}  hand = {self.__hand_time_sleep}"
+        return f"Chrome __browser: {self.__browser} Timing: max = {self.__max_time_sleep}  min = {self.__min_time_sleep}  hand = {self.__hand_time_sleep}"
+
+    @staticmethod
+    def __verifity_time_sleep(time_sleep:int):
+        if isinstance(time_sleep, int):
+            return time_sleep
+        else: raise TypeError
+
+    @staticmethod
+    def __verifity_file_name(file_name: str):
+        if isinstance(file_name, str):
+            return file_name
+        else:
+            raise TypeError
 
     @staticmethod
     def print_type():
         print(ChromeBrowser.__type)
 
-    @classmethod
-    def __check_value_by_int(cls, value):
-        if isinstance(value, int):
-            return True
-        else:
-            raise ValueError
+    def get_times_sleep(self) -> dict:
+        return {'hand_time':self.__hand_time_sleep, 'min':self.__min_time_sleep, 'max':self.__max_time_sleep}
 
     def set_times_sleep(self, hand_time_sleep: int = 0, min_time_sleep: int = 0, max_time_sleep: int = 0):
-        if self.__check_value_by_int(hand_time_sleep) and hand_time_sleep > 0:
+        if self.__verifity_time_sleep(hand_time_sleep) > 0:
             self.__hand_time_sleep = hand_time_sleep
             self.__min_time_sleep = 0
             self.__max_time_sleep = 0
 
-        if self.__check_value_by_int(hand_time_sleep) \
-                and hand_time_sleep == 0 \
-                and self.__check_value_by_int(min_time_sleep) \
-                and self.__check_value_by_int(max_time_sleep) \
-                and max_time_sleep >= min_time_sleep:
-            self.__hand_time_sleep = 0
+        if self.__verifity_time_sleep(hand_time_sleep) == 0 \
+                and self.__verifity_time_sleep(min_time_sleep) <= self.__verifity_time_sleep(max_time_sleep):
             self.__min_time_sleep = min_time_sleep
             self.__max_time_sleep = max_time_sleep
+
+    @property
+    def cookies_file_name(self):
+        return self.__cookies_file_name
+
+    @cookies_file_name.setter
+    def cookies_file_name(self, file_name:str):
+        self.__cookies_file_name = self.__verifity_file_name(file_name)
+
+    @cookies_file_name.deleter
+    def cookies_file_name(self):
+        self.__cookies_file_name = ''
+
+    @property
+    def json_file_name(self):
+        return self.__json_file_name
+
+    @cookies_file_name.setter
+    def json_file_name(self, file_name: str):
+        self.__json_file_name = self.__verifity_file_name(file_name)
+
+    @cookies_file_name.deleter
+    def json_file_name(self):
+        self.__json_file_name = ''
 
     @property
     def chrome_options(self):
@@ -75,16 +100,7 @@ class ChromeBrowser():
         return chrome_options
 
     @chrome_options.setter
-    def chrome_options(self, start_headless: bool = False, start_maximized: bool = True) -> object:
-
-        self.__start_headless = start_headless
-        self.__start_maximized = start_maximized
-
-        for option_head in CHROME_OPTIONS_HEAD:
-            if self.__start_headless and option_head == '--headless':
-                self.__chrome_options.add_argument(option_head)
-            elif self.__start_maximized and option_head == '--start-maximized':
-                self.__chrome_options.add_argument(option_head)
+    def chrome_options(self, CHROME_OPTIONS:list):
 
         for option in CHROME_OPTIONS:
             self.__chrome_options.add_argument(option)
@@ -94,15 +110,23 @@ class ChromeBrowser():
         self.__chrome_options.arguments.clear()
 
     def start_chrome_browser(self) -> object:
-        browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=self.__chrome_options)
-        return browser
+        self.__browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=self.__chrome_options)
 
+    def sleep(self):
+        if self.__hand_time_sleep > 0:
+            time.sleep(self.hand_time_sleep)
+        else:
+            time.sleep(random.randrange(self.__min_time_sleep, self.__max_time_sleep))
 
 if __name__ == '__main__':
     br = ChromeBrowser()
-    br.chrome_options = False, False
-    br.set_times_sleep(min_time_sleep=2, max_time_sleep=5)
+    br.chrome_options = CHROME_OPTIONS
+    br.set_times_sleep(hand_time_sleep=0, min_time_sleep=3, max_time_sleep=7)
     for i in br.chrome_options:
         print(i)
+    br.cookies_file_name = 'chrome.cookies'
+    print(br.cookies_file_name)
     br.start_chrome_browser()
+    br.sleep()
     print(br)
+    print(br.get_times_sleep())

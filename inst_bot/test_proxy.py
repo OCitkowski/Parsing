@@ -14,7 +14,7 @@ chrome_options = Options()
 chrome_options.add_argument(f'--proxy-server={PROXY}')
 
 browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-# browser.get("https://www.google.com")
+# __browser.get("https://www.google.com")
 browser.get("https://www.whatismyip.com/my-ip-information/")
 
 time.sleep(random.randrange(20, 24))

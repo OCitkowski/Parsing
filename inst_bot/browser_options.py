@@ -1,8 +1,7 @@
-CHROME_OPTIONS_HEAD = [
-    '--headless',
-    '--start-maximized'
-]
+
 CHROME_OPTIONS = [
+    # '--headless',
+    '--start-maximized',
     '--no-sandbox',
     '--disable-gpu',
     '--user-data-dir=/tmp/user-data',

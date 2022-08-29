@@ -66,15 +66,15 @@ def login(time_sleep: int = 3, close_browser: bool = False, proxy='85.26.146.169
     # if not os.path.isfile(f"{user_phone}_cookies"):
     #
     #     try:
-    #         browser.delete_all_cookies()
+    #         __browser.delete_all_cookies()
     #
-    #         username_input = browser.find_element('name', 'username')
+    #         username_input = __browser.find_element('name', 'username')
     #         username_input.clear()
     #         username_input.send_keys(user_name)
     #
     #         time.sleep(random.randrange(3, 5))
     #
-    #         password_input = browser.find_element('name', 'password')
+    #         password_input = __browser.find_element('name', 'password')
     #         password_input.clear()
     #         password_input.send_keys(password)
     #
@@ -83,28 +83,28 @@ def login(time_sleep: int = 3, close_browser: bool = False, proxy='85.26.146.169
     #         password_input.send_keys(Keys.ENTER)
     #         time.sleep(random.randrange(50, 60))
     #
-    #         json.dump(browser.get_cookies(), open(f"{user_phone}_cookies", "w"))
+    #         json.dump(__browser.get_cookies(), open(f"{user_phone}_cookies", "w"))
     #
     #         time.sleep(random.randrange(3, 5))
-    #         browser.close()
-    #         browser.quit()
+    #         __browser.close()
+    #         __browser.quit()
     #
     #     except Exception as ex:
     #         print(ex)
-    #         browser.close()
-    #         browser.quit()
+    #         __browser.close()
+    #         __browser.quit()
     # else:
-    #     browser.delete_all_cookies()
+    #     __browser.delete_all_cookies()
     #
     #     for cookie in json.load(open(f"{user_phone}_cookies", "r")):
-    #         browser.add_cookie(cookie)
+    #         __browser.add_cookie(cookie)
     #
     #     time.sleep(random.randrange(3, 5))
-    #     browser.refresh()
+    #     __browser.refresh()
     #     time.sleep(random.randrange(3, 5))
     #
     #     try:
-    #         turn_on_button = browser.find_element(By.XPATH,
+    #         turn_on_button = __browser.find_element(By.XPATH,
     #                                               '/html/body/div[1]/div/div/div/div[2]/div/div/div[1]/div/div[2]/div/div/div/div/div/div/div/div[3]/button[1]')
     #         turn_on_button.click()
     #
@@ -115,10 +115,10 @@ def login(time_sleep: int = 3, close_browser: bool = False, proxy='85.26.146.169
     #         time.sleep(time_sleep)
     #
     #         if close_browser:
-    #             browser.close()
-    #             browser.quit()
+    #             __browser.close()
+    #             __browser.quit()
     #         else:
-    #             return browser
+    #             return __browser
     return browser
 
 
@@ -128,16 +128,16 @@ def hashtag_search(browser, hashtag, close_browser: bool = False, Unlike: bool =
 
     try:
         time_sleep = 5
-        # browser.get(f'https://www.instagram.com/p/Cf_T7b1L5u0/')
+        # __browser.get(f'https://www.instagram.com/p/Cf_T7b1L5u0/')
         # time.sleep(time_sleep)
         #
-        # follow_button = browser.find_element(By.XPATH,
+        # follow_button = __browser.find_element(By.XPATH,
         #                                      '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/div[1]/section/main/div[1]/div[1]/article/div/div[2]/div/div[1]/div/header/div[2]/div[1]/div[2]/button/div/div')
         # print(follow_button.text)
         # follow_button.click()
         #
         # if follow_button.text == 'Following':
-        #     unfollow_button = browser.find_element(By.XPATH,
+        #     unfollow_button = __browser.find_element(By.XPATH,
         #                                            '/html/body/div[1]/div/div/div/div[2]/div/div/div[1]/div/div[2]/div/div/div/div/div[2]/div/div/div[3]/button[1]')
         #     unfollow_button.click()
         #
