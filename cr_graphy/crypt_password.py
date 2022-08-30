@@ -1,4 +1,5 @@
 # https://www.thepythoncode.com/code/encrypt-decrypt-files-symmetric-python
+import os
 
 import cryptography
 from cryptography.fernet import Fernet
@@ -121,6 +122,35 @@ def decrypt_in(filename, key):
     with open(filename, "w") as file:
         file.write(decrypt_data)
     print("File decrypted successfully")
+
+
+
+def encrypt_in_file(full_file_name):
+    password = input('Enter your password -')
+    result = False
+
+    if not os.path.isfile("salt.salt"):
+        key = generate_key(password, salt_size=16, save_salt=True)
+    else:
+        key = generate_key(password, load_existing_salt=True)
+
+    encrypt_in(full_file_name, key)
+
+    return result
+
+def decrypt_in_file(full_file_name):
+    password = input('Enter your password -')
+    result = False
+
+    if not os.path.isfile("salt.salt"):
+        print('Don`t have salt!!!')
+    else:
+        key = generate_key(password, load_existing_salt=True)
+
+    decrypt_in(full_file_name, key)
+
+    return result
+
 
 
 if __name__ == "__main__":
