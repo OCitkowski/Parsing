@@ -3,9 +3,11 @@ import os, time, random, json
 from dotenv import load_dotenv
 
 from selenium import webdriver
+
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
+
 from selenium.webdriver.common.by import By
 
 from selenium.common.exceptions import NoSuchElementException
@@ -22,10 +24,10 @@ user_name = os.getenv("USER_NAME")
 class ChromeBrowser():
     """Chrome __browser"""
     __type = "ChromeBrowser"
-    __chrome_options = Options()
 
     def __init__(self):
         self.__browser = None
+        self.__chrome_options = Options()
         self._cookies_file_name = 'chrome'
         self._json_file_name = 'chrome'
         self.__max_time_sleep = 0
@@ -103,16 +105,14 @@ class ChromeBrowser():
         return chrome_options
 
     @chrome_options.setter
-    def chrome_options(self):
-        #
-        # from selenium import webdriver
-        # from selenium.webdriver.chrome.options import Options
-        chrome_options = Options()
-        chrome_options.add_argument("--disable-extensions")
-        driver = webdriver.Chrome(chrome_options=chrome_options)
+    def chrome_options(self, options):
 
-        for option in CHROME_OPTIONS:
+        self.__chrome_options.add_argument("--disable-extensions")
+        for option in options:
             self.__chrome_options.add_argument(option)
+
+        self.__browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()),
+                                          options=self.__chrome_options)
 
     @chrome_options.deleter
     def chrome_options(self):
@@ -140,7 +140,7 @@ class ChromeBrowser():
     def save_cookies(self) -> bool:
         result = False
         try:
-            print(self._cookies_file_name)
+
             with open(self._cookies_file_name + '.cookies', 'w') as write_file:
                 json.dump(self.__browser.get_cookies(), write_file, ensure_ascii=False)
                 result = True
@@ -171,8 +171,6 @@ class ChromeBrowser():
         return result
 
     def open(self):
-        self.__browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()),
-                                          options=self.__chrome_options)
         return self.__browser
 
     def sleep(self):
@@ -221,8 +219,6 @@ class InstagramBot(ChromeBrowser):
                                                          '/html/body/div[2]/div/div/div[1]/div/div/div/div[1]/section/main/article/div[2]/div[1]/div[2]/form/div[1]/div[3]/button[1]')
 
             # turn_on_buttons = self.__browser.find_elements(By.LINK_TEXT, 'Log in')
-
-            print(turn_on_button.text)
             turn_on_button.click()
             print('turn of button')
         except NoSuchElementException:
@@ -379,14 +375,17 @@ if __name__ == '__main__':
     # decrypt_in_file(full_file_name)
     insta = InstagramBot(username=user_name, password=password)
     insta.cookies_file_name = user_name + '_insta'
-    insta.set_times_sleep(hand_time_sleep=0, min_time_sleep=3, max_time_sleep=5)
-    print(insta.__dict__)
+    insta.set_times_sleep(hand_time_sleep=0, min_time_sleep=3, max_time_sleep=7)
+    insta.chrome_options = CHROME_OPTIONS
+    # print(insta.__dict__)
+    # print(f' ***   {insta.chrome_options}')
     insta.open_in_instagram()
     insta.login_in_instagram()
-    insta.json_file_name = user_name + '_insta_by_hashtag'
-    hashtag = 'funny'
-    hashtag_data = insta.get_post_links_by_hashtag(hashtag, 10)
-    insta.save_data_in_json_file(hashtag_data)
+
+    # insta.json_file_name = user_name + '_insta_by_hashtag'
+    # hashtag = 'funny'
+    # hashtag_data = insta.get_post_links_by_hashtag(hashtag, 10)
+    # insta.save_data_in_json_file(hashtag_data)
     # data = insta.get_data_from_json_file()
     # collecting_data_from_posts = insta.get_collecting_data_from_posts_by_links(data)
     # insta.json_file_name = user_name + '_insta_collecting_data'
