@@ -118,7 +118,12 @@ class ChromeBrowser():
     def chrome_options(self):
         self.__chrome_options.arguments.clear()
 
-    def set_cookies(self) -> bool:
+    @property
+    def cookies(self):
+        pass
+
+    @cookies.deleter
+    def cookies(self) -> bool:
         result = False
         try:
             self.__browser.delete_all_cookies()
@@ -137,7 +142,8 @@ class ChromeBrowser():
             print(f'set cookies is {result}')
             return result
 
-    def save_cookies(self) -> bool:
+    @cookies.setter
+    def cookies(self, file_name=None) -> bool:
         result = False
         try:
 
