@@ -43,4 +43,7 @@ Feed exports: Цей метод дозволяє зберігати дані у 
 Після цього, Scrapy збереже дані у файл data.csv.
 
 ___
-
+в мене вже є файл pipelines.py у папці проекту. з таким кодом. його заміняти?
+    class DictComPipeline:
+        def process_item(self, item, spider):
+            return item
