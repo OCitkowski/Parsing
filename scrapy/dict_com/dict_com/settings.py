@@ -95,7 +95,7 @@ FEED_EXPORT_ENCODING = "utf-8"
 FEED_FORMAT = "csv"
 FEED_URI = "data.csv"
 LOG_FILE = "scrapy.log"
-LOG_LEVEL = "INFO"
+LOG_LEVEL = "DEBUG"
 LOG_FORMAT = '%(asctime)s [%(name)s] %(levelname)s: %(message)s'
 
 ITEM_PIPELINES = {
