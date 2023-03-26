@@ -24,7 +24,7 @@ ROBOTSTXT_OBEY = False
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-DOWNLOAD_DELAY = 1.5
+DOWNLOAD_DELAY = 3
 # The download delay setting will honor only one of:
 # CONCURRENT_REQUESTS_PER_DOMAIN = 16
 # CONCURRENT_REQUESTS_PER_IP = 16
@@ -101,3 +101,11 @@ LOG_FORMAT = '%(asctime)s [%(name)s] %(levelname)s: %(message)s'
 ITEM_PIPELINES = {
     'dict_com.pipelines.JsonWriterPipeline': 800,  # look to pipelines.py
 }
+
+
+# В даному коді вказується, що Scrapy повинен використовувати браузерний агент, який схожий на Google Chrome, і не
+# враховувати robots.txt. Також включено обробку кукісів, що дозволить зберігати дані авторизації.
+USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+ROBOTSTXT_OBEY = False
+COOKIES_ENABLED = True
+DOWNLOAD_DELAY = 1
