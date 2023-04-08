@@ -22,9 +22,13 @@ def get_words_from_file(full_file_name: str = None) -> list:
 
 def get_data_from_json_file(json_file_name):
     try:
+        words = {}
         with open(json_file_name + '.json', 'r') as read_file:
             template = json.load(read_file)
-            words = (note['fields'][0] for note in template['notes'])
+            for note in template['notes']:
+                item = note['fields'][12]
+                value = note['fields'][0]
+                words[item] = value
     except:
         pass
 
@@ -32,7 +36,6 @@ def get_data_from_json_file(json_file_name):
 
 
 if __name__ == '__main__':
-
-    for i, word in enumerate(get_data_from_json_file('deck')):
-        print(i, word)
-
+    words = get_data_from_json_file('deck')
+    for i, x in words.items():
+        print(i, x)
