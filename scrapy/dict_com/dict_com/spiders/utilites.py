@@ -37,7 +37,7 @@ def get_data_from_json_file(json_file_name):
                     continue
 
                 item = note['fields'][12]
-                value = note['fields'][0]
+                value = [note['fields'][0], note['fields'][10], ' ',False]
                 words[item] = value
     except:
         pass
@@ -45,7 +45,22 @@ def get_data_from_json_file(json_file_name):
     return words
 
 
+def save_data_in_json_file(data, json_file_name):
+    result = False
+    try:
+        with open(json_file_name, 'w') as write_file:
+            json.dump(data, write_file, ensure_ascii=False)
+            result = True
+        print(f'{json_file_name}.json save to root')
+    except:
+        print(f'{json_file_name}.json don`t save to root')
+    return result
+
+
 if __name__ == '__main__':
     words = get_data_from_json_file('deck')
+
     for i, x in words.items():
         print(i, x)
+
+    save_data_in_json_file(words, 'words.json')
