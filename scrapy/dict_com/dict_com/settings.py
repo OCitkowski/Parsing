@@ -19,7 +19,7 @@ NEWSPIDER_MODULE = "dict_com.spiders"
 ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-# CONCURRENT_REQUESTS = 32
+CONCURRENT_REQUESTS = 32
 
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
@@ -92,8 +92,8 @@ TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 FEED_EXPORT_ENCODING = "utf-8"
 
 # I added
-FEED_FORMAT = "csv"
-FEED_URI = "data.csv"
+# FEED_FORMAT = "csv"
+# FEED_URI = "data.csv"
 LOG_FILE = "scrapy.log"
 LOG_LEVEL = "DEBUG"
 LOG_FORMAT = '%(asctime)s [%(name)s] %(levelname)s: %(message)s'
@@ -108,4 +108,54 @@ ITEM_PIPELINES = {
 USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
 ROBOTSTXT_OBEY = False
 COOKIES_ENABLED = True
-DOWNLOAD_DELAY = 1
+DOWNLOAD_DELAY = 3
+
+
+DOWNLOADER_MIDDLEWARES = {
+    'dict_com.middlewares.ProxyMiddleware': 543,
+    'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 544,
+}
+
+HTTP_PROXY_ENABLED = True
+HTTP_PROXY_LIST = [
+    # 'http://proxy1.example.com:8080',
+    '8.219.176.202:8080',
+    '46.101.239.193:80',
+    '64.225.8.191:9987',
+    '8.219.97.248:80',
+    '217.76.50.200:8000',
+    '103.152.9.131:80',
+    '182.16.12.30:8088',
+    '45.62.167.249:80',
+    '20.191.183.149:3129',
+    '210.148.141.4:8080',
+    '40.119.236.22:80',
+    '178.33.3.163:8080',
+    '64.225.4.63:9998',
+    '146.59.192.125:3128',
+    '190.109.205.253:999',
+    '110.164.208.125:8888',
+    '194.67.91.153:80',
+    '117.54.114.99:80',
+    '182.93.85.225:8080',
+    '89.43.10.141:80',
+    '117.54.114.96:80',
+    '20.210.113.32:80',
+    '35.246.142.152:80',
+    '170.80.202.252:999',
+    '138.197.102.119:80',
+    '156.17.193.1:80',
+    '95.183.140.89:80',
+    '97.74.92.60:80',
+    '102.223.20.217:80',
+    '51.68.124.241:80',
+    '51.75.141.46:80',
+    '82.79.213.118:9812',
+    '47.74.71.208:2080',
+    '167.71.191.74:80',
+    '61.29.96.146:8000',
+    '51.68.181.108:80',
+    '78.28.152.111:80',
+    '34.100.152.46:80',
+    '210.148.141.1:8080',
+]

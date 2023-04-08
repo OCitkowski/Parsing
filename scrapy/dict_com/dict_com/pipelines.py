@@ -3,9 +3,6 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 
-
-# useful for handling different item types with a single interface
-from itemadapter import ItemAdapter
 import json
 import logging
 
@@ -27,7 +24,7 @@ class DictComPipeline:
         return item
 
 
-class JsonWriterPipeline(object):
+class JsonWriterPipelineOLD(object):
     def open_spider(self, spider):
         self.file = open('data.json', 'w')
 
@@ -40,11 +37,12 @@ class JsonWriterPipeline(object):
             data = filedata.read()
 
         data.append(item)
+        print(f'item - {item}')
         # # запис значень з item в template
-        # data["word"] = item["word"]
-        # data["translation"] = item["translation"]
-        # data["part_of_speech"] = item["part_of_speech"]
-        # data["german_alternatives"] = item["german_alternatives"]
+        data["word"] = item["word"]
+        data["translation"] = item["translation"]
+        data["part_of_speech"] = item["part_of_speech"]
+        data["german_alternatives"] = item["german_alternatives"]
         # # ...
 
         # запис template у вихідний файл
@@ -54,7 +52,7 @@ class JsonWriterPipeline(object):
 
         return item
 
-    def _process_item(self, item, spider):
+    def __process_item(self, item, spider):
         # Відкрийте файл та завантажте його в змінну data
         with open('deck.json', 'r') as f:
             data = json.load(f)
@@ -80,3 +78,30 @@ class JsonWriterPipeline(object):
             json.dump(data, f)
 
         return item
+
+
+class JsonWriterPipeline:
+    def open_spider(self, spider):
+        self.file = open("data.json", "r+")
+        try:
+            self.items = json.load(self.file)
+        except ValueError:
+            self.items = []
+
+    def process_item(self, item, spider):
+        # додавання item у список
+        self.items.append(dict(item))
+
+        # перемотка файлу на початок
+        self.file.seek(0)
+
+        # запис у вихідний файл
+        json.dump(self.items, self.file, ensure_ascii=False, indent=4)
+
+        # обрізання файлу, щоб він був тільки такого ж розміру, як вміщує даних
+        self.file.truncate()
+
+        return item
+
+    def close_spider(self, spider):
+        self.file.close()

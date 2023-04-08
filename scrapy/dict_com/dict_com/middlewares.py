@@ -5,6 +5,8 @@
 
 from scrapy import signals
 
+from scrapy.exceptions import NotConfigured
+import random
 # useful for handling different item types with a single interface
 from itemadapter import is_item, ItemAdapter
 
@@ -101,3 +103,29 @@ class DictComDownloaderMiddleware:
 
     def spider_opened(self, spider):
         spider.logger.info("Spider opened: %s" % spider.name)
+
+
+class ProxyMiddleware(object):
+
+    def __init__(self, proxies):
+        self.proxies = proxies
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        if not crawler.settings.getbool('HTTP_PROXY_ENABLED'):
+            raise NotConfigured
+
+        proxy_list = crawler.settings.getlist('HTTP_PROXY_LIST')
+        if not proxy_list:
+            raise NotConfigured
+
+        proxies = {}
+        for proxy in proxy_list:
+            proxies[proxy] = None
+
+        return cls(proxies)
+
+    def process_request(self, request, spider):
+        proxy_address = random.choice(list(self.proxies.keys()))
+        print(proxy_address)
+        request.meta['proxy'] = "http://%s" % proxy_address
