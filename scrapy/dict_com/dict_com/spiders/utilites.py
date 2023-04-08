@@ -26,6 +26,16 @@ def get_data_from_json_file(json_file_name):
         with open(json_file_name + '.json', 'r') as read_file:
             template = json.load(read_file)
             for note in template['notes']:
+
+                len_row = len(note['fields'][0].split(' '))
+                row = note['fields'][0].split(' ')
+
+                if  len_row > 2:
+                    continue
+
+                if row[0] in ['der', 'Der', 'die', 'das'] and len_row != 2:
+                    continue
+
                 item = note['fields'][12]
                 value = note['fields'][0]
                 words[item] = value
