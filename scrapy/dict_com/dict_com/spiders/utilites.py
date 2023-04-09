@@ -1,7 +1,21 @@
-import json
+import json, os
 
 
-def get_words_from_file(full_file_name: str = None) -> list:
+def get_data_from_json_file2(json_file_name):
+    try:
+        with open(json_file_name, 'r') as read_file:
+            template = json.load(read_file)
+            # print(template)
+
+    except:
+        pass
+    finally:
+        read_file.close()
+
+    return template
+
+
+def get_words_from_file_2(full_file_name: str = None) -> list:
     words = []
 
     if full_file_name == None:
@@ -20,12 +34,24 @@ def get_words_from_file(full_file_name: str = None) -> list:
     return words
 
 
-def get_data_from_json_file(json_file_name):
+def save_data_in_json_file(data, json_file_name):
+    result = False
     try:
-        words = {}
-        with open(json_file_name + '.json', 'r') as read_file:
+        with open(json_file_name, 'w') as write_file:
+            json.dump(data, write_file, ensure_ascii=False, indent=2)
+            result = True
+        print(f'{json_file_name}.json save to root')
+    except:
+        print(f'{json_file_name}.json don`t save to root')
+    return result
+
+
+def get_data_from_json_file_deck(json_file_name):
+    try:
+        words = []
+        with open(json_file_name + '.json', 'r+') as read_file:
             template = json.load(read_file)
-            for note in template['notes']:
+            for i, note in enumerate(template['notes']):
 
                 len_row = len(note['fields'][0].split(' '))
                 row = note['fields'][0].split(' ')
@@ -36,50 +62,56 @@ def get_data_from_json_file(json_file_name):
                 if row[0] in ['der', 'Der', 'die', 'das'] and len_row != 2:
                     continue
 
-                item = note['fields'][12]
-                value = [note['fields'][0], note['fields'][10], ' ', False]
-                words[item] = value
+                words.append(
+                    {i: {
+                "word": note['fields'][0],
+                "id": note['fields'][12],
+                "translation": '',
+                "part_of_speech": note['fields'][10],
+                "german_alternatives": '',
+                "status": False
+                }})
+
+                #
+                # item = note['fields'][12]
+                # value = [note['fields'][0], note['fields'][10], ' ', False]
+                # words[item] = value
     except:
         pass
 
     return words
 
 
-def save_data_in_json_file(data, json_file_name):
-    result = False
-    try:
-        with open(json_file_name, 'w') as write_file:
-            json.dump(data, write_file, ensure_ascii=False)
-            result = True
-        print(f'{json_file_name}.json save to root')
-    except:
-        print(f'{json_file_name}.json don`t save to root')
-    return result
+def get_data_from_json_file_words(json_file_name):
+    template = None
 
-
-def get_data_from_json_file2(json_file_name):
     try:
         with open(json_file_name, 'r') as read_file:
-            template = json.load(read_file)
-            # print(template)
 
-    except:
-        pass
-    finally:
-        read_file.close()
+            template = json.load(read_file)
+
+    except Exception as ex:
+        print(ex, os.path.abspath(__file__))
+    # finally:
+    #     read_file.close()
 
     return template
 
 
 if __name__ == '__main__':
-    words = get_data_from_json_file('deck')
+    words = get_data_from_json_file_deck('deck')
 
     # for i, x in words.items():
     #     print(i, x)
 
-    save_data_in_json_file(words, 'words2.json')
+    save_data_in_json_file(words, 'words.json')
 
-    words = get_data_from_json_file2('words2.json')
+    file_json = '/home/fox/PycharmProjects/python_parsing/scrapy/dict_com/dict_com/spiders/words.json'
+    words = get_data_from_json_file_words(file_json)
 
-    for i, row in words.items():
-        print(i, row)
+
+
+    start_urls = [f"https://dict.com/ukrainisch-deutsch/{row}" for row in words]
+
+    for r in start_urls:
+        print(r)

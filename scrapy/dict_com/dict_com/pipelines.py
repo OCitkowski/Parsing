@@ -24,66 +24,8 @@ class DictComPipeline:
         return item
 
 
-class JsonWriterPipelineOLD(object):
-    def open_spider(self, spider):
-        self.file = open('data.json', 'w')
-
-    def close_spider(self, spider):
-        self.file.close()
-
-    def process_item(self, item, spider):
-        # зчитування шаблонного файлу
-        with open("'/home/fox/PycharmProjects/python_parsing/scrapy/dict_com/dict_com/spiders/data.json",
-                  "r") as filedata:
-            data = filedata.read()
-
-        data.append(item)
-        print(f'item - {item}')
-        # # запис значень з item в template
-        data["word"] = item["word"]
-        data["translation"] = item["translation"]
-        data["part_of_speech"] = item["part_of_speech"]
-        data["german_alternatives"] = item["german_alternatives"]
-        # # ...
-
-        # запис template у вихідний файл
-        with open("data.json", "w") as filewrite:
-            # json.dump(data, f, ensure_ascii=False, indent=4)
-            filewrite.write(json.dumps(data, indent=4))
-
-        return item
-
-    def __process_item(self, item, spider):
-        # Відкрийте файл та завантажте його в змінну data
-        with open('deck.json', 'r') as f:
-            data = json.load(f)
-        i = 0
-        # Перезаписати значення
-        for note in data['notes']:
-            fields = note['fields']
-            i += 1
-
-            if fields[0] == item["word"]:
-                for i, field in enumerate(fields):
-
-                    if i == 2:
-                        fields[i] = item["translation"]
-                    elif i == 7:
-                        fields[i] = item["german_alternatives"]
-                logging.debug(f"for: {i} -- {item['word']}| Ukr - {fields[2]} | german_alternatives - {fields[7]} ")
-
-            # print(i, fields)
-
-        # Зберегти нові дані у файл
-        with open('deck.json', 'w') as f:
-            json.dump(data, f)
-
-        return item
-
-
 class JsonWriterPipeline:
-
-    file_json = "/home/fox/PycharmProjects/python_parsing/scrapy/dict_com/dict_com/spiders/data.json"
+    file_json = "/home/fox/PycharmProjects/python_parsing/scrapy/dict_com/dict_com/spiders/words.json"
 
     def open_spider(self, spider):
         self.file = open(self.file_json, "r+")
@@ -93,8 +35,23 @@ class JsonWriterPipeline:
             self.items = []
 
     def process_item(self, item, spider):
-        # додавання item у список
-        self.items.append(dict(item))
+        # перетворення номера на ціле число
+        item_number = int(item["number"])
+
+        # пошук слова за номером в списку
+        for i, stored_item in enumerate(self.items):
+            if stored_item["number"] == item_number:
+                # заміна значення translation та зміна статусу
+                self.items[i]["translation"] = item["translation"]
+                self.items[i]["status"] = True
+                break
+        else:
+            # якщо слово за номером не знайдено, додаємо новий запис
+            self.items.append({
+                "number": item_number,
+                "translation": item["translation"],
+                "status": True
+            })
 
         # перемотка файлу на початок
         self.file.seek(0)

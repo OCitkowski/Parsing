@@ -25,8 +25,10 @@ class DictSpider(scrapy.Spider):
     file_json = '/home/fox/PycharmProjects/python_parsing/scrapy/dict_com/dict_com/spiders/words.json'
     words = get_data_from_json_file(file_json)
 
-    start_urls = ["https://dict.com/ukrainisch-deutsch/{}".format(word) for i, word in enumerate(words) if i < 2]
-
+    # start_urls = [f"https://dict.com/ukrainisch-deutsch/{row[1][0]}" for i, row in enumerate(words.items()) if i < 10]
+    start_urls = [f"https://dict.com/ukrainisch-deutsch/{row['word']}" for i, row in enumerate(words) if i < 10]
+    # for r in start_urls:
+    #     print(r)
     # start_urls = ['https://dict.com/ukrainisch-deutsch/haben', 'https://dict.com/ukrainisch-deutsch/gehen']
 
     def parse(self, response):
