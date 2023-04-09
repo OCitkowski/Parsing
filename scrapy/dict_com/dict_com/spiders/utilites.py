@@ -30,14 +30,14 @@ def get_data_from_json_file(json_file_name):
                 len_row = len(note['fields'][0].split(' '))
                 row = note['fields'][0].split(' ')
 
-                if  len_row > 2:
+                if len_row > 2:
                     continue
 
                 if row[0] in ['der', 'Der', 'die', 'das'] and len_row != 2:
                     continue
 
                 item = note['fields'][12]
-                value = [note['fields'][0], note['fields'][10], ' ',False]
+                value = [note['fields'][0], note['fields'][10], ' ', False]
                 words[item] = value
     except:
         pass
@@ -57,10 +57,29 @@ def save_data_in_json_file(data, json_file_name):
     return result
 
 
+def get_data_from_json_file2(json_file_name):
+    try:
+        with open(json_file_name, 'r') as read_file:
+            template = json.load(read_file)
+            # print(template)
+
+    except:
+        pass
+    finally:
+        read_file.close()
+
+    return template
+
+
 if __name__ == '__main__':
     words = get_data_from_json_file('deck')
 
-    for i, x in words.items():
-        print(i, x)
+    # for i, x in words.items():
+    #     print(i, x)
 
-    save_data_in_json_file(words, 'words.json')
+    save_data_in_json_file(words, 'words2.json')
+
+    words = get_data_from_json_file2('words2.json')
+
+    for i, row in words.items():
+        print(i, row)

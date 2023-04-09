@@ -1,18 +1,31 @@
 import scrapy
 import logging
+import json
+
+
+def get_data_from_json_file(json_file_name):
+    try:
+        with open(json_file_name, 'r') as read_file:
+            template = json.load(read_file)
+
+    except:
+        pass
+    # finally:
+    #     read_file.close()
+
+    return template
 
 
 class DictSpider(scrapy.Spider):
     name = "dict"
     allowed_domains = ["dict.com"]
-    # words = get_words_from_file('new.txt')
-    # words = get_data_from_json_file('deck')
-    _json_file_name = ''
+    file_json = 'words.json'
+    words = get_data_from_json_file(file_json)
+    start_urls = ["https://dict.com/ukrainisch-deutsch/{}".format(word) for i, word in enumerate(words) if i < 2]
 
-    # start_urls = ["https://dict.com/ukrainisch-deutsch/{}".format(word) for i, word in enumerate(words) if i < 2]
-    start_urls = ['https://dict.com/ukrainisch-deutsch/haben', 'https://dict.com/ukrainisch-deutsch/gehen']
+    # start_urls = ['https://dict.com/ukrainisch-deutsch/haben', 'https://dict.com/ukrainisch-deutsch/gehen']
+
     def parse(self, response):
-
         self.logger.info("Login successful!")
 
         word = response.xpath("//span[@class='lex_ful_entr l1']/text()").get()
@@ -36,5 +49,3 @@ class DictSpider(scrapy.Spider):
             "german_alternatives": german_alternatives
         }
         print(f"translation_xpath: -{word}|{translation}|{part_of_speech}|{german_alternatives}")
-
-
