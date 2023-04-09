@@ -33,7 +33,8 @@ class JsonWriterPipelineOLD(object):
 
     def process_item(self, item, spider):
         # зчитування шаблонного файлу
-        with open("data.json", "r") as filedata:
+        with open("'/home/fox/PycharmProjects/python_parsing/scrapy/dict_com/dict_com/spiders/data.json",
+                  "r") as filedata:
             data = filedata.read()
 
         data.append(item)
@@ -81,8 +82,11 @@ class JsonWriterPipelineOLD(object):
 
 
 class JsonWriterPipeline:
+
+    file_json = "/home/fox/PycharmProjects/python_parsing/scrapy/dict_com/dict_com/spiders/data.json"
+
     def open_spider(self, spider):
-        self.file = open("data.json", "r+")
+        self.file = open(self.file_json, "r+")
         try:
             self.items = json.load(self.file)
         except ValueError:

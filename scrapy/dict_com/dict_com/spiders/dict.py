@@ -1,15 +1,18 @@
 import scrapy
 import logging
-import json
+import json, os
 
 
 def get_data_from_json_file(json_file_name):
+    template = None
+
     try:
         with open(json_file_name, 'r') as read_file:
+
             template = json.load(read_file)
 
-    except:
-        pass
+    except Exception as ex:
+        print(ex, os.path.abspath(__file__))
     # finally:
     #     read_file.close()
 
@@ -19,8 +22,9 @@ def get_data_from_json_file(json_file_name):
 class DictSpider(scrapy.Spider):
     name = "dict"
     allowed_domains = ["dict.com"]
-    file_json = 'words.json'
+    file_json = '/home/fox/PycharmProjects/python_parsing/scrapy/dict_com/dict_com/spiders/words.json'
     words = get_data_from_json_file(file_json)
+
     start_urls = ["https://dict.com/ukrainisch-deutsch/{}".format(word) for i, word in enumerate(words) if i < 2]
 
     # start_urls = ['https://dict.com/ukrainisch-deutsch/haben', 'https://dict.com/ukrainisch-deutsch/gehen']
