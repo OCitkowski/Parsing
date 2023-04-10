@@ -28,6 +28,7 @@ class JsonWriterPipeline:
     file_json = "/home/fox/PycharmProjects/python_parsing/scrapy/dict_com/dict_com/spiders/words.json"
 
     def open_spider(self, spider):
+        print('open_spider')
         self.file = open(self.file_json, "r+")
         try:
             self.items = json.load(self.file)
@@ -35,23 +36,18 @@ class JsonWriterPipeline:
             self.items = []
 
     def process_item(self, item, spider):
+        index = int(item["index"])
+        id = item["id"]
+        print(f'process_item - {item["id"]} / {item["word"]} ')
         # перетворення номера на ціле число
-        item_number = int(item["number"])
 
-        # пошук слова за номером в списку
-        for i, stored_item in enumerate(self.items):
-            if stored_item["number"] == item_number:
-                # заміна значення translation та зміна статусу
-                self.items[i]["translation"] = item["translation"]
-                self.items[i]["status"] = True
-                break
-        else:
-            # якщо слово за номером не знайдено, додаємо новий запис
-            self.items.append({
-                "number": item_number,
-                "translation": item["translation"],
-                "status": True
-            })
+
+        for dict_item in self.items:
+            for key, value in dict_item.items():
+                # print(key, value)
+                if value['id'] == id:
+                    value['translation'] = item["translation"]
+                    value['status'] = True  # замінюємо значення "translation"
 
         # перемотка файлу на початок
         self.file.seek(0)

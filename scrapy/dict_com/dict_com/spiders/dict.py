@@ -3,36 +3,37 @@ import logging
 import json, os
 
 
-def get_data_from_json_file(json_file_name):
-    template = None
+def get_data_from_json_file_words(json_file_name):
+    row = []
 
     try:
-        with open(json_file_name, 'r') as read_file:
+        with open(json_file_name, 'r') as file:
+            data = json.load(file)
 
-            template = json.load(read_file)
+        for item in data:
+            for key, value in item.items():
+
+                if value['status'] == False:
+                    row.append([value['word'],
+                                value['id'],
+                                value['status']])
 
     except Exception as ex:
         print(ex, os.path.abspath(__file__))
-    # finally:
-    #     read_file.close()
 
-    return template
+    return row
 
 
 class DictSpider(scrapy.Spider):
     name = "dict"
     allowed_domains = ["dict.com"]
     file_json = '/home/fox/PycharmProjects/python_parsing/scrapy/dict_com/dict_com/spiders/words.json'
-    words = get_data_from_json_file(file_json)
+    words = get_data_from_json_file_words(file_json)
 
-    # start_urls = [f"https://dict.com/ukrainisch-deutsch/{row[1][0]}" for i, row in enumerate(words.items()) if i < 10]
-    start_urls = [f"https://dict.com/ukrainisch-deutsch/{row['word']}" for i, row in enumerate(words) if i < 10]
-    # for r in start_urls:
-    #     print(r)
-    # start_urls = ['https://dict.com/ukrainisch-deutsch/haben', 'https://dict.com/ukrainisch-deutsch/gehen']
+    # start_urls = [f"https://dict.com/ukrainisch-deutsch/{row[0]}" for row in words]
 
     def parse(self, response):
-        self.logger.info("Login successful!")
+        print(f'parse {response.meta["id"]} {response.meta["word"]} ')
 
         word = response.xpath("//span[@class='lex_ful_entr l1']/text()").get()
 
@@ -49,9 +50,24 @@ class DictSpider(scrapy.Spider):
         # logging.debug(f"translation_xpath: -{word}|{translation}|{part_of_speech_xpath}|{german_alternatives_xpath}")
 
         yield {
+            "index": response.meta['index'],
+            "id": response.meta['id'],
             "word": word,
             "translation": translation if translation else None,
             "part_of_speech": part_of_speech if translation else None,
             "german_alternatives": german_alternatives
         }
-        print(f"translation_xpath: -{word}|{translation}|{part_of_speech}|{german_alternatives}")
+        print(
+            f"index  - {response.meta['index']} -- translation_xpath: -{word}|{translation}|{part_of_speech}|{german_alternatives}")
+
+    def start_requests(self):
+        print('start_requests')
+        for i, row in enumerate(self.words):
+            if i > 10:
+                break
+
+            yield scrapy.Request(
+                url=f"https://dict.com/ukrainisch-deutsch/{row[0]}",
+                callback=self.parse,
+                meta={'index': i, 'id': row[1]}
+            )

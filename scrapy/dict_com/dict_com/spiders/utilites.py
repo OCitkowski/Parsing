@@ -64,18 +64,14 @@ def get_data_from_json_file_deck(json_file_name):
 
                 words.append(
                     {i: {
-                "word": note['fields'][0],
-                "id": note['fields'][12],
-                "translation": '',
-                "part_of_speech": note['fields'][10],
-                "german_alternatives": '',
-                "status": False
-                }})
+                        "word": note['fields'][0],
+                        "id": note['fields'][12],
+                        "translation": '',
+                        "part_of_speech": note['fields'][10],
+                        "german_alternatives": '',
+                        "status": False
+                    }})
 
-                #
-                # item = note['fields'][12]
-                # value = [note['fields'][0], note['fields'][10], ' ', False]
-                # words[item] = value
     except:
         pass
 
@@ -83,35 +79,36 @@ def get_data_from_json_file_deck(json_file_name):
 
 
 def get_data_from_json_file_words(json_file_name):
-    template = None
+    row = []
 
     try:
-        with open(json_file_name, 'r') as read_file:
+        with open(json_file_name, 'r') as file:
+            data = json.load(file)
 
-            template = json.load(read_file)
+        for item in data:
+            for key, value in item.items():
+
+                if value['status'] == False:
+                    row.append([value['word'],
+                                value['id'],
+                                value['status']])
 
     except Exception as ex:
         print(ex, os.path.abspath(__file__))
-    # finally:
-    #     read_file.close()
 
-    return template
+    return row
 
 
 if __name__ == '__main__':
     words = get_data_from_json_file_deck('deck')
 
-    # for i, x in words.items():
-    #     print(i, x)
-
     save_data_in_json_file(words, 'words.json')
 
     file_json = '/home/fox/PycharmProjects/python_parsing/scrapy/dict_com/dict_com/spiders/words.json'
     words = get_data_from_json_file_words(file_json)
+    for row in words:
+        # if row != None:
+        print(row[1])
 
-
-
-    start_urls = [f"https://dict.com/ukrainisch-deutsch/{row}" for row in words]
-
-    for r in start_urls:
-        print(r)
+    #
+    # start_urls = [f"https://dict.com/ukrainisch-deutsch/{row}" for row in words]
