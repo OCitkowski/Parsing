@@ -25,6 +25,7 @@ def get_data_from_json_file_words(json_file_name):
 
 
 class DictSpider(scrapy.Spider):
+    MAX_WORD = 100
     name = "dict"
     allowed_domains = ["dict.com"]
     file_json = '/home/fox/PycharmProjects/python_parsing/scrapy/dict_com/dict_com/spiders/words.json'
@@ -63,7 +64,7 @@ class DictSpider(scrapy.Spider):
     def start_requests(self):
         print('start_requests')
         for i, row in enumerate(self.words):
-            if i > 10:
+            if i > self.MAX_WORD:
                 break
 
             yield scrapy.Request(
