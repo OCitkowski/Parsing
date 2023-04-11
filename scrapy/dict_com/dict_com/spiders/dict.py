@@ -25,7 +25,7 @@ def get_data_from_json_file_words(json_file_name):
 
 
 class DictSpider(scrapy.Spider):
-    MAX_WORD = 100
+    MAX_WORD = 5
     name = "dict"
     allowed_domains = ["dict.com"]
     file_json = '/home/fox/PycharmProjects/python_parsing/scrapy/dict_com/dict_com/spiders/words.json'
@@ -33,6 +33,12 @@ class DictSpider(scrapy.Spider):
 
     # start_urls = [f"https://dict.com/ukrainisch-deutsch/{row[0]}" for row in words]
 
+    def parse_start_url(self, response):
+        if response.status != 200:
+            logging.warning(f"Domain {response.url} seems to be blocked, received status {response.status}.")
+            return
+
+        yield self.parse(response)
     def parse(self, response):
         print(f'parse {response.meta["id"]} {response.meta["word"]} ')
 
@@ -62,10 +68,11 @@ class DictSpider(scrapy.Spider):
             f"index  - {response.meta['index']} -- translation_xpath: -{word}|{translation}|{part_of_speech}|{german_alternatives}")
 
     def start_requests(self):
-        print('start_requests')
+
         for i, row in enumerate(self.words):
-            if i > self.MAX_WORD:
+            if i > 5:
                 break
+            print(f'start_requests https://dict.com/ukrainisch-deutsch/{row[0]}')
 
             yield scrapy.Request(
                 url=f"https://dict.com/ukrainisch-deutsch/{row[0]}",
